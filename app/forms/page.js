@@ -60,16 +60,13 @@ const pseudoData = {
   ]
 }
 
-export async function getServerSideProps(context) {
+async function getData() {
   //todo: parse pagination parameters from query
-  return {
-    props: {
-      forms: pseudoData,
-    }, // will be passed to the page component as props
-  }
+  return pseudoData;
 }
 
-export default function Forms({forms}) {
+export default async function Page() {
+  const forms = await getData();
   const { offset, size, total } = forms;
   const recordPerPage = size;
   var currentPage = 0;
@@ -104,7 +101,7 @@ export default function Forms({forms}) {
            status, invoke_time, verify_time}) => {
 
              return (
-              <tr>
+              <tr key={id}>
                 <td>{id}</td>
                 <td>{customer}</td>
                 <td>{amount}</td>

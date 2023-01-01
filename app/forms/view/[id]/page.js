@@ -14,18 +14,18 @@ const pseudoData = {
 };
 
 
-export async function getServerSideProps({params}) {
+async function getData(id) {
   //todo: parse pagination parameters from query
-  const { id } = params;
   return {
-    props: {
-      id: id,
-      ...pseudoData,
-    }, // will be passed to the page component as props
-  }
+    id: id,
+    ...pseudoData,
+  };
 }
 
-export default function Detail(data){
+
+export default async function Page({ params }){
+  const formID = params.id;
+  const data = await getData(formID);
   const {id, customer, amount, bank, verify_mode, result,
    status, invoke_time, verify_time} = data;
    return (
