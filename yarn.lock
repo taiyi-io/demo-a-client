@@ -79,6 +79,11 @@
   dependencies:
     tslib "^2.4.0"
 
+bootstrap@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.npmmirror.com/bootstrap/-/bootstrap-5.2.3.tgz#54739f4414de121b9785c5da3c87b37ff008322b"
+  integrity sha512-cEKPM+fwb3cT8NzQZYEu4HilJ3anCrWqh3CHAok1p9jXqMPsPTBhU25fBckEJHJ/p+tTxTFTsFQGM+gaHpi3QQ==
+
 caniuse-lite@^1.0.30001406:
   version "1.0.30001441"
   resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001441.tgz#987437b266260b640a23cd18fbddb509d7f69f3e"
