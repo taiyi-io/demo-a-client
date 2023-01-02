@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Pagenation from '../../components/pagination';
 
 export default function Forms(props){
     const { offset, size, total, records } = props;
@@ -50,8 +51,15 @@ export default function Forms(props){
                     <td>{invoke_time}</td>
                     <td>{verify_time}</td>
                     <td>
-                      <Link href={'/forms/view/' + id}>View</Link>&nbsp;
-                      <Link href={'/forms/view/' + id}>Submit</Link>
+                      <Link href={'/forms/view/' + id}>
+                        <button type="button" class="btn btn-outline-primary btn-sm">
+                          <i class="bi bi-search"></i>
+                          View
+                        </button>
+                      </Link>
+                      <Link href={'/forms/view/' + id}>
+                        <button type="button" class="btn btn-outline-primary btn-sm">Submit</button>
+                      </Link>
                     </td>
                   </tr>
                 );
@@ -59,6 +67,7 @@ export default function Forms(props){
             }
             </tbody>
           </table>
+          <Pagenation baseURL='/forms/' current={currentPage} total={totalPages}/>
         </div>
       )
 }
