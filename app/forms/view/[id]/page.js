@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import FormDetail from './detail';
 
 const pseudoData = {
   customer: "lisi",
@@ -28,16 +29,10 @@ async function getData(id) {
 export default async function Page({ params }){
   const formID = params.id;
   const data = await getData(formID);
-  const {id, customer, amount, bank, verify_mode, result,
-   status, invoke_time, verify_time} = data;
    return (
      <div>
       <Link href='/forms'>Back</Link>
-      <div>ID: {id}</div>
-      <div>Customer: {customer}</div>
-      <div>Amount: {amount}</div>
-      <div>Bank: {bank}</div>
-      <div>Verify_mode: {verify_mode}</div>
+      <FormDetail data={data}/>
      </div>
    )
 }

@@ -1,0 +1,126 @@
+'use client';
+import {useAppContext} from '../../../../components/context';
+
+const i18n = {
+  en: {
+    id: 'ID',
+    customer: 'Customer',
+    bank: 'Bank',
+    amount: 'Amount',
+    asset: 'Minimal Asset',
+    mode: 'Verify Mode',
+    result: 'Verify Result',
+    status: 'Status',    
+    approved: 'Approved',
+    rejected: 'Rejected',
+    modeManual: 'Manual',
+    modeContract: 'Smart Contract',
+    statusIlde: 'Created',
+    statusApproving: 'Approving',
+    statusComplete: 'Completed',
+    createTime: 'Create Time',
+    invokeTime: 'Invoke Time',
+    completeTime: 'Complete Time',
+  },
+  cn: {
+    id: '单据号',
+    customer: '客户标识',
+    bank: '审批银行',
+    amount: '申请金额',
+    asset: '资产要求',
+    mode: '验证模式',
+    result: '验证结果',
+    status: '状态',
+    approved: '通过',
+    rejected: '拒绝',
+    modeManual: '人工处理',
+    modeContract: '智能合约',
+    statusIlde: '新建',
+    statusApproving: '审批中',
+    statusComplete: '已完成',
+    createTime: '创建时间',
+    invokeTime: '提交时间',
+    completeTime: '完成时间',
+  }
+}
+
+
+const enumIdle = 0;
+const enumApproving = 1;
+
+export default function FormDetail(props){
+    const { lang } = useAppContext();
+    const texts = i18n[lang];
+    const { data } = props;
+    const {id, customer, amount, bank, verify_mode, result,
+        minimum_asset, status, create_time, invoke_time, verify_time} = data;
+    let statusLabel, resultLabel;
+    if (enumIdle === status){
+        statusLabel = texts.statusIlde;
+    } else if (enumApproving === status){
+        statusLabel = texts.statusApproving;
+    }else{
+        statusLabel = texts.statusComplete;
+        resultLabel = result? texts.approved: texts.rejected;
+    }
+    var parameters = [
+        {
+            label: texts.id,
+            value: id,
+        },
+        {
+            label: texts.customer,
+            value: customer,
+        },
+        {
+            label: texts.amount,
+            value: amount,
+        },
+        {
+            label: texts.asset,
+            value: minimum_asset,
+        },
+        {
+            label: texts.bank,
+            value: bank,
+        },
+        {
+            label: texts.mode,
+            value: 'manual' === verify_mode? texts.modeManual: texts.modeContract,
+        },
+        {
+            label: texts.result,
+            value: resultLabel,
+        },
+        {
+            label: texts.status,
+            value: statusLabel,
+        },
+        {
+            label: texts.createTime,
+            value: create_time,
+        },
+        {
+            label: texts.invokeTime,
+            value: invoke_time,
+        },
+        {
+            label: texts.completeTime,
+            value: verify_time,
+        },
+    ]
+    return (
+        <table className="table table-hover">
+            <tbody>
+                {
+                    parameters.map(({label, value}, index) => (
+                        <tr key={index}>
+                            <td>{label}</td>
+                            <td>{value}</td>
+                        </tr>
+                    ))
+                }
+            </tbody>
+        </table>
+    )
+}
