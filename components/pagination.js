@@ -4,7 +4,7 @@ export default function Pagination(props){
     const isLast = (total - 1) === current;
     var items = [];
     items.push((
-        <li class={isFirst? 'page-item disabled': 'page-item'}>
+        <li class={isFirst? 'page-item disabled': 'page-item'} key='first'>
             <a class="page-link" href={baseURL + '?page=0'} aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
@@ -12,11 +12,11 @@ export default function Pagination(props){
         ));
     for (let page = 0; page < total; page++){
         items.push(
-            <li class={page === current? 'page-item disabled': 'page-item'}><a class="page-link" href={baseURL + '?page=' + page}>{page + 1}</a></li>
+            <li class={page === current? 'page-item disabled': 'page-item'} key={'page-' + page}><a class="page-link" href={baseURL + '?page=' + page}>{page + 1}</a></li>
         );
     }
     items.push((
-        <li class={isLast? 'page-item disabled': 'page-item'}>
+        <li class={isLast? 'page-item disabled': 'page-item'} key='first'>
             <a class="page-link" href={baseURL + '?page=' + (total - 1)} aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
