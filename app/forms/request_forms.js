@@ -80,7 +80,7 @@ export default function Forms(props){
         <div className='container'>
           <div className='row m-2 p-2'>
             <div className='col-12 text-center'>
-              <h3>{texts.title}</h3>              
+              <h5>{texts.title}</h5>              
             </div>
             <div className='col-12'>
               {texts.user + ': ' + user}

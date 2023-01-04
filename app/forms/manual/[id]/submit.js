@@ -1,78 +1,47 @@
 'use client';
 import {useAppContext} from '../../../../components/context';
+import BackButton from '../../../../components/back_button';
 
 const i18n = {
   en: {
-    title: 'Request Detail',
+    title: 'Submit Request',
     id: 'ID',
     customer: 'Customer',
     bank: 'Bank',
     amount: 'Amount',
     asset: 'Minimal Asset',
     mode: 'Verify Mode',
-    result: 'Verify Result',
-    status: 'Status',    
-    approved: 'Approved',
-    rejected: 'Rejected',
     modeManual: 'Manual',
-    modeContract: 'Smart Contract',
-    statusIlde: 'Created',
-    statusApproving: 'Approving',
-    statusComplete: 'Completed',
+    modeContract: 'Automatic (By Smart Contract)',
     createTime: 'Create Time',
-    invokeTime: 'Invoke Time',
-    completeTime: 'Complete Time',
-    verifier: 'Verifier',
     invoker: 'Invoker',
     propertyName: 'Property',
     propertyValue: 'Value',
+    btnSubmit: 'Submit',
   },
   cn: {
-    title: '申请单详情',
+    title: '提交审批',
     id: '单据号',
     customer: '客户标识',
     bank: '审批银行',
     amount: '申请金额',
     asset: '资产要求',
     mode: '验证模式',
-    result: '验证结果',
-    status: '状态',
-    approved: '通过',
-    rejected: '拒绝',
     modeManual: '人工处理',
-    modeContract: '智能合约',
-    statusIlde: '新建',
-    statusApproving: '审批中',
-    statusComplete: '已完成',
+    modeContract: '自动处理(使用智能合约)',
     createTime: '创建时间',
-    invokeTime: '提交时间',
-    completeTime: '完成时间',
-    verifier: '审批者',
     invoker: '申请人',
     propertyName: '属性名',
     propertyValue: '属性值',
+    btnSubmit: '提交',
   }
 }
 
-
-const enumIdle = 0;
-const enumApproving = 1;
-
-export default function FormDetail(props){
+export default function Submit(props){
     const { lang } = useAppContext();
     const texts = i18n[lang];
     const { data } = props;
-    const {id, customer, amount, bank, verify_mode, result, invoker, verifier,
-        minimum_asset, status, create_time, invoke_time, verify_time} = data;
-    let statusLabel, resultLabel;
-    if (enumIdle === status){
-        statusLabel = texts.statusIlde;
-    } else if (enumApproving === status){
-        statusLabel = texts.statusApproving;
-    }else{
-        statusLabel = texts.statusComplete;
-        resultLabel = result? texts.approved: texts.rejected;
-    }
+    const {id, customer, amount, bank, minimum_asset, create_time} = data;
     var parameters = [
         {
             label: texts.id,
@@ -91,40 +60,8 @@ export default function FormDetail(props){
             value: minimum_asset,
         },
         {
-            label: texts.bank,
-            value: bank,
-        },
-        {
-            label: texts.mode,
-            value: 'manual' === verify_mode? texts.modeManual: texts.modeContract,
-        },
-        {
-            label: texts.result,
-            value: resultLabel,
-        },
-        {
-            label: texts.status,
-            value: statusLabel,
-        },
-        {
-            label: texts.invoker,
-            value: invoker,
-        },
-        {
             label: texts.createTime,
             value: create_time,
-        },
-        {
-            label: texts.invokeTime,
-            value: invoke_time,
-        },
-        {
-            label: texts.verifier,
-            value: verifier,
-        },
-        {
-            label: texts.completeTime,
-            value: verify_time,
         },
     ]
     return (
@@ -151,6 +88,11 @@ export default function FormDetail(props){
                     }
                 </tbody>
             </table>
+            <div className='row justify-content-center'>
+                <div className='col-2'>
+                    <BackButton href='/forms'/>
+                </div>
+            </div>
         </div>
 
     )
