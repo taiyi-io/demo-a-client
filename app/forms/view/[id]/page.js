@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import FormDetail from './detail';
+import BackButton from '../../../../components/back_button';
 
 const pseudoData = {
   customer: "lisi",
@@ -10,6 +10,7 @@ const pseudoData = {
   result: false,
   verify_mode: 'contract',
   verifier: 'bob',
+  comment: 'The minimum asset does not meet the requirement',
   status: 2,
   create_time: '2022-12-18 11:00:05',
   invoke_time: '2022-12-21 19:41:00',
@@ -30,9 +31,19 @@ export default async function Page({ params }){
   const formID = params.id;
   const data = await getData(formID);
    return (
-     <div>
-      <Link href='/forms'>Back</Link>
-      <FormDetail data={data}/>
+     <div className='container'>
+      <div className='row p-3'>
+        <div className='col-3'>          
+        </div>
+        <div className='col-6'>
+          <FormDetail data={data}/>
+        </div>
+      </div>
+      <div className='row justify-content-center'>
+        <div className='col-2'>
+          <BackButton href='/forms'/>
+        </div>
+      </div>
      </div>
    )
 }

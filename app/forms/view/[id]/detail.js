@@ -21,6 +21,10 @@ const i18n = {
     createTime: 'Create Time',
     invokeTime: 'Invoke Time',
     completeTime: 'Complete Time',
+    verifier: 'Verifier',
+    invoker: 'Invoker',
+    propertyName: 'Property',
+    propertyValue: 'Value',
   },
   cn: {
     id: '单据号',
@@ -41,6 +45,10 @@ const i18n = {
     createTime: '创建时间',
     invokeTime: '提交时间',
     completeTime: '完成时间',
+    verifier: '审批者',
+    invoker: '申请人',
+    propertyName: '属性名',
+    propertyValue: '属性值',
   }
 }
 
@@ -52,7 +60,7 @@ export default function FormDetail(props){
     const { lang } = useAppContext();
     const texts = i18n[lang];
     const { data } = props;
-    const {id, customer, amount, bank, verify_mode, result,
+    const {id, customer, amount, bank, verify_mode, result, invoker, verifier,
         minimum_asset, status, create_time, invoke_time, verify_time} = data;
     let statusLabel, resultLabel;
     if (enumIdle === status){
@@ -97,6 +105,10 @@ export default function FormDetail(props){
             value: statusLabel,
         },
         {
+            label: texts.invoker,
+            value: invoker,
+        },
+        {
             label: texts.createTime,
             value: create_time,
         },
@@ -105,12 +117,22 @@ export default function FormDetail(props){
             value: invoke_time,
         },
         {
+            label: texts.verifier,
+            value: verifier,
+        },
+        {
             label: texts.completeTime,
             value: verify_time,
         },
     ]
     return (
-        <table className="table table-hover">
+        <table className="table table-hover table-striped">
+            <thead>
+                <tr className='table-primary'>
+                    <td>{texts.propertyName}</td>
+                    <td>{texts.propertyValue}</td>
+                </tr>
+            </thead>
             <tbody>
                 {
                     parameters.map(({label, value}, index) => (

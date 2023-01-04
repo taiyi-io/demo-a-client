@@ -26,6 +26,8 @@ const i18n = {
     statusIlde: 'Created',
     statusApproving: 'Approving',
     statusComplete: 'Completed',
+    title: 'Verification Requests',
+    user: 'Current User',
   },
   cn: {
     id: '单据号',
@@ -49,6 +51,8 @@ const i18n = {
     statusIlde: '新建',
     statusApproving: '审批中',
     statusComplete: '已完成',
+    title: '校验申请',
+    user: '当前用户',
   }
 }
 
@@ -58,7 +62,7 @@ const enumComplete = 2;
 
 export default function Forms(props){
     const { offset, size, total, records } = props;
-    const { lang } = useAppContext();
+    const { lang, user } = useAppContext();
     const texts = i18n[lang];
     const recordPerPage = size;
     var currentPage = 0;
@@ -75,6 +79,14 @@ export default function Forms(props){
     return (
         <div className='container'>
           <div className='row m-2 p-2'>
+            <div className='col-12 text-center'>
+              <h3>{texts.title}</h3>              
+            </div>
+            <div className='col-12'>
+              {texts.user + ': ' + user}
+            </div>
+            <hr/>
+            
             <div className='col col-lg-2'>
               <Link href='/forms/new/'>
                 <button type="button" className="btn btn-primary btn-sm m-1">
@@ -94,9 +106,9 @@ export default function Forms(props){
                   <th>{texts.amount}</th>
                   <th>{texts.asset}</th>
                   <th>{texts.bank}</th>
+                  <th>{texts.status}</th>
                   <th>{texts.mode}</th>
                   <th>{texts.result}</th>
-                  <th>{texts.status}</th>
                   <th>{texts.modified}</th>
                   <th>{texts.operate}</th>
                 </tr>
@@ -110,7 +122,7 @@ export default function Forms(props){
                     icon: 'bi-search',
                     label: texts.btnDetail,
                   }];
-                  let statusLabel, timeLabel, resultLabel;
+                  let statusLabel, timeLabel, resultLabel, modeLabel;
                   if (enumIdle === status){
                     statusLabel = texts.statusIlde;
                     timeLabel = create_time;
@@ -127,10 +139,12 @@ export default function Forms(props){
                   } else if (enumApproving === status){
                     statusLabel = texts.statusApproving;
                     timeLabel = invoke_time;
+                    modeLabel = 'manual' === verify_mode? texts.modeManual: texts.modeContract;
                   }else{
                     statusLabel = texts.statusComplete;
                     timeLabel = verify_time;
                     resultLabel = result? texts.approved: texts.rejected;
+                    modeLabel = 'manual' === verify_mode? texts.modeManual: texts.modeContract;
                   }
                   return (
                     <tr key={id}>
@@ -139,9 +153,9 @@ export default function Forms(props){
                       <td>{amount}</td>
                       <td>{minimum_asset}</td>
                       <td>{bank}</td>
-                      <td>{'manual' === verify_mode? texts.modeManual: texts.modeContract}</td>
-                      <td>{resultLabel}</td>
                       <td>{statusLabel}</td>
+                      <td>{modeLabel}</td>
+                      <td>{resultLabel}</td>
                       <td>{timeLabel}</td>
                       <td>
                         <div className='d-flex'>
