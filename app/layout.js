@@ -1,7 +1,9 @@
 import { ContextProvider } from '../components/context';
 import Boot from './bootstrap';
 
-const version = 'v0.2.0';
+let npmPackage = require("../package.json");
+
+const version = npmPackage.version;
 
 export default function RootLayout({ children }) {
   const defaultContext = {

@@ -1,4 +1,4 @@
-import AutoPanel from "./manual_panel";
+import AutoPanel from "./auto_panel";
 
 const pseudoData = {
   customer: "wang_xiaoer",
