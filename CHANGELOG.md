@@ -1,5 +1,11 @@
 # Change Log for Demo A Client
 
+## [0.2.0] - 2023-01-05
+
+### Changed
+
+- All static page ready
+
 ## [0.1.0] - 2022-12-31
 
 ### Changed

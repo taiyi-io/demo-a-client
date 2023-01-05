@@ -40,7 +40,7 @@ export default async function Page({ params }){
         <div className='col-3'>          
         </div>
         <div className='col-6'>
-          <SubmitRequest data={data} bankList={bankList} mode='manual'/>
+          <SubmitRequest data={data} bankList={bankList} mode='auto'/>
         </div>
       </div>
      </div>
