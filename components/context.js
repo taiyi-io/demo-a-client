@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react';
 const defaultContext = {
     lang: 'cn',
     user: 'demo',
+    version: '0.0.0',
 };
 
 const AppContext = createContext(defaultContext);
@@ -12,11 +13,7 @@ export function useAppContext(){
     return useContext(AppContext);
 }
 
-export function ContextProvider({lang, user, children}){
-    var value = {
-        lang: lang,
-        user: user,
-    };
+export function ContextProvider({value, children}){    
     return (
         <AppContext.Provider value={value}>
             {children}

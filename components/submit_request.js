@@ -4,7 +4,6 @@ import BackButton from './back_button';
 
 const i18n = {
     en: {
-        title: 'Submit Request',
         id: 'ID',
         customer: 'Customer',
         bank: 'Bank',
@@ -21,7 +20,6 @@ const i18n = {
         btnSubmit: 'Submit',
     },
     cn: {
-        title: '提交审批',
         id: '单据号',
         customer: '客户标识',
         bank: '审批银行',
@@ -69,10 +67,6 @@ export default function SubmitRequest(props) {
     ]
     return (
         <div>
-            <div className='col-12 text-center'>
-                <h5>{texts.title}</h5>
-            </div>
-            <hr />
             <table className="table table-hover table-striped">
                 <thead>
                     <tr className='table-primary'>

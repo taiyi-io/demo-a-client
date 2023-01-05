@@ -1,77 +1,75 @@
 'use client';
-import {useAppContext} from '../../../../components/context';
+import { useAppContext } from '../../../../components/context';
 
 const i18n = {
-  en: {
-    title: 'Request Detail',
-    id: 'ID',
-    customer: 'Customer',
-    bank: 'Bank',
-    amount: 'Amount',
-    asset: 'Minimal Asset',
-    mode: 'Verify Mode',
-    result: 'Verify Result',
-    status: 'Status',    
-    approved: 'Approved',
-    rejected: 'Rejected',
-    modeManual: 'Manual',
-    modeContract: 'Smart Contract',
-    statusIlde: 'Created',
-    statusApproving: 'Approving',
-    statusComplete: 'Completed',
-    createTime: 'Create Time',
-    invokeTime: 'Invoke Time',
-    completeTime: 'Complete Time',
-    verifier: 'Verifier',
-    invoker: 'Invoker',
-    propertyName: 'Property',
-    propertyValue: 'Value',
-  },
-  cn: {
-    title: '申请单详情',
-    id: '单据号',
-    customer: '客户标识',
-    bank: '审批银行',
-    amount: '申请金额',
-    asset: '资产要求',
-    mode: '验证模式',
-    result: '验证结果',
-    status: '状态',
-    approved: '通过',
-    rejected: '拒绝',
-    modeManual: '人工处理',
-    modeContract: '智能合约',
-    statusIlde: '新建',
-    statusApproving: '审批中',
-    statusComplete: '已完成',
-    createTime: '创建时间',
-    invokeTime: '提交时间',
-    completeTime: '完成时间',
-    verifier: '审批者',
-    invoker: '申请人',
-    propertyName: '属性名',
-    propertyValue: '属性值',
-  }
+    en: {
+        id: 'ID',
+        customer: 'Customer',
+        bank: 'Bank',
+        amount: 'Amount',
+        asset: 'Minimal Asset',
+        mode: 'Verify Mode',
+        result: 'Verify Result',
+        status: 'Status',
+        approved: 'Approved',
+        rejected: 'Rejected',
+        modeManual: 'Manual',
+        modeContract: 'Smart Contract',
+        statusIlde: 'Created',
+        statusApproving: 'Approving',
+        statusComplete: 'Completed',
+        createTime: 'Create Time',
+        invokeTime: 'Invoke Time',
+        completeTime: 'Complete Time',
+        verifier: 'Verifier',
+        invoker: 'Invoker',
+        propertyName: 'Property',
+        propertyValue: 'Value',
+    },
+    cn: {
+        id: '单据号',
+        customer: '客户标识',
+        bank: '审批银行',
+        amount: '申请金额',
+        asset: '资产要求',
+        mode: '验证模式',
+        result: '验证结果',
+        status: '状态',
+        approved: '通过',
+        rejected: '拒绝',
+        modeManual: '人工处理',
+        modeContract: '智能合约',
+        statusIlde: '新建',
+        statusApproving: '审批中',
+        statusComplete: '已完成',
+        createTime: '创建时间',
+        invokeTime: '提交时间',
+        completeTime: '完成时间',
+        verifier: '审批者',
+        invoker: '申请人',
+        propertyName: '属性名',
+        propertyValue: '属性值',
+    }
 }
 
 
 const enumIdle = 0;
 const enumApproving = 1;
 
-export default function FormDetail(props){
+export default function FormDetail(props) {
     const { lang } = useAppContext();
     const texts = i18n[lang];
     const { data } = props;
-    const {id, customer, amount, bank, verify_mode, result, invoker, verifier,
-        minimum_asset, status, create_time, invoke_time, verify_time} = data;
+    const { id, customer, amount, bank, verify_mode, result, invoker, verifier,
+        minimum_asset, status, create_time, invoke_time, verify_time } = data;
     let statusLabel, resultLabel;
-    if (enumIdle === status){
+    if (enumIdle === status) {
         statusLabel = texts.statusIlde;
-    } else if (enumApproving === status){
+    } else if (enumApproving === status) {
         statusLabel = texts.statusApproving;
-    }else{
+    } else {
         statusLabel = texts.statusComplete;
-        resultLabel = result? texts.approved: texts.rejected;
+        resultLabel = result ? texts.approved : texts.rejected;
     }
     var parameters = [
         {
@@ -96,7 +94,7 @@ export default function FormDetail(props){
         },
         {
             label: texts.mode,
-            value: 'manual' === verify_mode? texts.modeManual: texts.modeContract,
+            value: 'manual' === verify_mode ? texts.modeManual : texts.modeContract,
         },
         {
             label: texts.result,
@@ -128,30 +126,24 @@ export default function FormDetail(props){
         },
     ]
     return (
-        <div>
-            <div className='col-12 text-center'>
-              <h5>{texts.title}</h5>              
-            </div>
-            <hr/>
-            <table className="table table-hover table-striped">
-                <thead>
-                    <tr className='table-primary'>
-                        <td>{texts.propertyName}</td>
-                        <td>{texts.propertyValue}</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        parameters.map(({label, value}, index) => (
-                            <tr key={index}>
-                                <td>{label}</td>
-                                <td>{value}</td>
-                            </tr>
-                        ))
-                    }
-                </tbody>
-            </table>
-        </div>
+        <table className="table table-hover table-striped">
+            <thead>
+                <tr className='table-primary'>
+                    <td>{texts.propertyName}</td>
+                    <td>{texts.propertyValue}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    parameters.map(({ label, value }, index) => (
+                        <tr key={index}>
+                            <td>{label}</td>
+                            <td>{value}</td>
+                        </tr>
+                    ))
+                }
+            </tbody>
+        </table>
 
     )
 }

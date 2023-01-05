@@ -1,4 +1,4 @@
-import SubmitRequest from '../../../../components/submit_request';
+import ManualPanel from "./manual_panel";
 
 const pseudoData = {
   customer: "wang_xiaoer",
@@ -35,14 +35,6 @@ export default async function Page({ params }){
   const data = await getData(formID);
   const bankList = await queryBanks();
    return (
-     <div className='container'>
-      <div className='row p-3'>
-        <div className='col-3'>          
-        </div>
-        <div className='col-6'>
-          <SubmitRequest data={data} bankList={bankList} mode='manual'/>
-        </div>
-      </div>
-     </div>
+    <ManualPanel data={data} bankList={bankList} mode='manual'/>
    )
 }

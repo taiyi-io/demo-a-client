@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Pagenation from '../../components/pagination';
-import {useAppContext} from '../../components/context';
+import { useAppContext } from '../../components/context';
 
 const i18n = {
   en: {
@@ -27,7 +27,6 @@ const i18n = {
     statusApproving: 'Approving',
     statusComplete: 'Completed',
     title: 'Verification Requests',
-    user: 'Current User',
   },
   cn: {
     id: '单据号',
@@ -52,7 +51,6 @@ const i18n = {
     statusApproving: '审批中',
     statusComplete: '已完成',
     title: '校验申请',
-    user: '当前用户',
   }
 }
 
@@ -60,126 +58,123 @@ const enumIdle = 0;
 const enumApproving = 1;
 const enumComplete = 2;
 
-export default function Forms(props){
-    const { offset, size, total, records } = props;
-    const { lang, user } = useAppContext();
-    const texts = i18n[lang];
-    const recordPerPage = size;
-    var currentPage = 0;
-    if (offset >= recordPerPage){
-      currentPage = Math.floor(offset / recordPerPage);
-    }
-    let totalPages = 0;
-    if (0 === total % recordPerPage) {
-      totalPages = total / recordPerPage;
-    } else {
-      totalPages = Math.ceil(total / recordPerPage);
-    }
-    
-    return (
-        <div className='container'>
-          <div className='row m-2 p-2'>
-            <div className='col-12 text-center'>
-              <h5>{texts.title}</h5>              
-            </div>
-            <div className='col-12'>
-              {texts.user + ': ' + user}
-            </div>
-            <hr/>
-            
-            <div className='col col-lg-2'>
-              <Link href='/forms/new/'>
-                <button type="button" className="btn btn-primary btn-sm m-1">
-                  <i className="bi bi-plus"></i>{texts.btnNew}
-                </button>
-              </Link>
-            </div>
-            <div className="col-auto">
-            </div>
-          </div>
-          <div className='row m-2 p-2'>
-            <table className="table table-hover">
-              <thead>
-                <tr className="table-primary">
-                  <th>{texts.id}</th>
-                  <th>{texts.customer}</th>
-                  <th>{texts.amount}</th>
-                  <th>{texts.asset}</th>
-                  <th>{texts.bank}</th>
-                  <th>{texts.status}</th>
-                  <th>{texts.mode}</th>
-                  <th>{texts.result}</th>
-                  <th>{texts.modified}</th>
-                  <th>{texts.operate}</th>
-                </tr>
-              </thead>
-              <tbody>
-              {
-                records.map(({id, customer, amount, bank, verify_mode, result,
-                  minimum_asset, status, create_time, invoke_time, verify_time}) => {
-                  var operates = [{
-                    href: '/forms/view/' + id,
-                    icon: 'bi-search',
-                    label: texts.btnDetail,
-                  }];
-                  let statusLabel, timeLabel, resultLabel, modeLabel;
-                  if (enumIdle === status){
-                    statusLabel = texts.statusIlde;
-                    timeLabel = create_time;
-                    operates.push({
-                        href: '/forms/manual/' + id,
-                        icon: 'bi-person-fill',
-                        label: texts.btnManual,
-                      },{
-                        href: '/forms/auto/' + id,
-                        icon: 'bi-robot',
-                        label: texts.btnAuto,
-                      }
-                    );
-                  } else if (enumApproving === status){
-                    statusLabel = texts.statusApproving;
-                    timeLabel = invoke_time;
-                    modeLabel = 'manual' === verify_mode? texts.modeManual: texts.modeContract;
-                  }else{
-                    statusLabel = texts.statusComplete;
-                    timeLabel = verify_time;
-                    resultLabel = result? texts.approved: texts.rejected;
-                    modeLabel = 'manual' === verify_mode? texts.modeManual: texts.modeContract;
-                  }
-                  return (
-                    <tr key={id}>
-                      <td>{id}</td>
-                      <td>{customer}</td>
-                      <td>{amount}</td>
-                      <td>{minimum_asset}</td>
-                      <td>{bank}</td>
-                      <td>{statusLabel}</td>
-                      <td>{modeLabel}</td>
-                      <td>{resultLabel}</td>
-                      <td>{timeLabel}</td>
-                      <td>
-                        <div className='d-flex'>
-                          {
-                            operates.map(({href, icon, label}, index)=> (
-                              <Link href={href} key={index}>
-                                <button type="button" className="btn btn-outline-primary btn-sm m-1">
-                                  <i className={'bi ' + icon}></i>
-                                  {label}
-                                </button>
-                              </Link>
-                            ))
-                          }
-                        </div>                        
-                      </td>
-                    </tr>
-                  );
-                })
-              }
-              </tbody>
-            </table>
-            <Pagenation baseURL='/forms/' current={currentPage} total={totalPages}/>
-          </div>
+export default function Forms(props) {
+  const { offset, size, total, records } = props;
+  const { lang } = useAppContext();
+  const texts = i18n[lang];
+  const recordPerPage = size;
+  var currentPage = 0;
+  if (offset >= recordPerPage) {
+    currentPage = Math.floor(offset / recordPerPage);
+  }
+  let totalPages = 0;
+  if (0 === total % recordPerPage) {
+    totalPages = total / recordPerPage;
+  } else {
+    totalPages = Math.ceil(total / recordPerPage);
+  }
+
+  return (
+    <div className='container'>
+      <div className='row mx-1'>
+        <nav aria-label="breadcrumb">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item active" aria-current="page">{texts.title}</li>
+          </ol>
+        </nav>
+        <div className='col col-lg-2 px-3'>
+          <Link href='/forms/new/'>
+            <button type="button" className="btn btn-primary btn-sm m-1">
+              <i className="bi bi-plus"></i>{texts.btnNew}
+            </button>
+          </Link>
         </div>
-      )
+        <div className="col-auto">
+        </div>
+      </div>
+      <div className='row m-2 p-2'>
+        <table className="table table-hover">
+          <thead>
+            <tr className="table-primary">
+              <th>{texts.id}</th>
+              <th>{texts.customer}</th>
+              <th>{texts.amount}</th>
+              <th>{texts.asset}</th>
+              <th>{texts.bank}</th>
+              <th>{texts.status}</th>
+              <th>{texts.mode}</th>
+              <th>{texts.result}</th>
+              <th>{texts.modified}</th>
+              <th>{texts.operate}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              records.map(({ id, customer, amount, bank, verify_mode, result,
+                minimum_asset, status, create_time, invoke_time, verify_time }) => {
+                var operates = [{
+                  href: '/forms/view/' + id,
+                  icon: 'bi-search',
+                  label: texts.btnDetail,
+                }];
+                let statusLabel, timeLabel, resultLabel, modeLabel;
+                if (enumIdle === status) {
+                  statusLabel = texts.statusIlde;
+                  timeLabel = create_time;
+                  operates.push({
+                    href: '/forms/manual/' + id,
+                    icon: 'bi-person-fill',
+                    label: texts.btnManual,
+                  }, {
+                    href: '/forms/auto/' + id,
+                    icon: 'bi-robot',
+                    label: texts.btnAuto,
+                  }
+                  );
+                } else if (enumApproving === status) {
+                  statusLabel = texts.statusApproving;
+                  timeLabel = invoke_time;
+                  modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
+                } else {
+                  statusLabel = texts.statusComplete;
+                  timeLabel = verify_time;
+                  resultLabel = result ? texts.approved : texts.rejected;
+                  modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
+                }
+                return (
+                  <tr key={id}>
+                    <td>{id}</td>
+                    <td>{customer}</td>
+                    <td>{amount}</td>
+                    <td>{minimum_asset}</td>
+                    <td>{bank}</td>
+                    <td>{statusLabel}</td>
+                    <td>{modeLabel}</td>
+                    <td>{resultLabel}</td>
+                    <td>{timeLabel}</td>
+                    <td>
+                      <div className='d-flex'>
+                        {
+                          operates.map(({ href, icon, label }, index) => (
+                            <Link href={href} key={index}>
+                              <button type="button" className="btn btn-outline-primary btn-sm m-1">
+                                <i className={'bi ' + icon}></i>
+                                {label}
+                              </button>
+                            </Link>
+                          ))
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+        <Pagenation baseURL='/forms/' current={currentPage} total={totalPages} />
+      </div>
+    </div>
+  )
 }
 

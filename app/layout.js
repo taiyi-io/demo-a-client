@@ -1,15 +1,20 @@
 import { ContextProvider } from '../components/context';
 import Boot from './bootstrap';
 
-const defaultLang = 'cn';
-const defaultUser = 'demo';
+const version = 'v0.2.0';
 
 export default function RootLayout({ children }) {
+  const defaultContext = {
+    lang: 'cn',
+    user: 'demo',
+    version: version,
+  }
+  
   return (
     <html>
       <body>
         <Boot />
-        <ContextProvider lang={defaultLang} user={defaultUser}>
+        <ContextProvider value={defaultContext}>
           {children}
         </ContextProvider>
       </body>

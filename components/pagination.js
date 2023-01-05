@@ -16,7 +16,7 @@ export default function Pagination(props){
         );
     }
     items.push((
-        <li className={isLast? 'page-item disabled': 'page-item'} key='first'>
+        <li className={isLast? 'page-item disabled': 'page-item'} key='last'>
             <a className="page-link" href={baseURL + '?page=' + (total - 1)} aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>

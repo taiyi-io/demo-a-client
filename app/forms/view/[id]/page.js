@@ -1,5 +1,4 @@
-import FormDetail from './detail';
-import BackButton from '../../../../components/back_button';
+import DetailPanel from './detail_panel';
 
 const pseudoData = {
   customer: "lisi",
@@ -31,19 +30,6 @@ export default async function Page({ params }){
   const formID = params.id;
   const data = await getData(formID);
    return (
-     <div className='container'>
-      <div className='row p-3'>
-        <div className='col-3'>          
-        </div>
-        <div className='col-6'>
-          <FormDetail data={data}/>
-        </div>
-      </div>
-      <div className='row justify-content-center'>
-        <div className='col-2'>
-          <BackButton href='/forms'/>
-        </div>
-      </div>
-     </div>
+    <DetailPanel data={data}/>
    )
 }

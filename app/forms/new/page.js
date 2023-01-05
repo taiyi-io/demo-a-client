@@ -1,5 +1,5 @@
 
-import CreateForm from './request';
+import NewPanel from "./new_panel";
 
 const pseudoData = [
     'wang_xiaoer',
@@ -8,23 +8,15 @@ const pseudoData = [
     'laoliu',
 ];
 
-async function queryUsers(){
+async function queryUsers() {
     return pseudoData;
 }
 
 
-export default async function Page(props){
+export default async function Page(props) {
     const userList = await queryUsers();
     return (
-        <div className='container'>
-            <div className='row p-3'>
-                <div className='col-3'>          
-                </div>
-                <div className='col-6'>
-                    <CreateForm users={userList}/>
-                </div>
-            </div>
-        </div>
+        <NewPanel users={userList} />
     )
 
 }

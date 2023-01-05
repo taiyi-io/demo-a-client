@@ -21,10 +21,8 @@ const i18n = {
   }
 }
 
-const version = 'v0.2.0';
-
 function HomePage() {
-  const { lang } = useAppContext();
+  const { lang, version } = useAppContext();
   const texts = i18n[lang];
   return (
     <div className='container'>
@@ -32,16 +30,16 @@ function HomePage() {
         <div className='col-2'>
         </div>
         <div className='col-8'>
-          <div class="card" style={{ width: '18 rem' }}>
-            <div class="card-header">
+          <div className="card" style={{ width: '18 rem' }}>
+            <div className="card-header">
               {texts.welcome + ' ' + version}
             </div>
-            <div class="card-body">
-              <h5 class="card-title">{texts.title}</h5>
-              <p class="card-text">{texts.scenario}</p>
+            <div className="card-body">
+              <h5 className="card-title">{texts.title}</h5>
+              <p className="card-text">{texts.scenario}</p>
               <div className='d-flex'>
-                <a href="/forms/" class="btn btn-primary mx-3">{texts.demo}</a>
-                <a href={texts.detailURL} class="btn btn-outline-primary mx-3">{texts.detail}</a>
+                <a href="/forms/" className="btn btn-primary mx-3">{texts.demo}</a>
+                <a href={texts.detailURL} className="btn btn-outline-primary mx-3">{texts.detail}</a>
               </div>
 
             </div>
