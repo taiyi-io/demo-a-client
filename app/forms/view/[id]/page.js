@@ -7,7 +7,7 @@ const pseudoData = {
   minimum_asset: 1000000,
   invoker: 'atom',
   result: false,
-  verify_mode: 'contract',
+  verify_mode: 'manual',
   verifier: 'bob',
   comment: 'The minimum asset does not meet the requirement',
   status: 2,
