@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Pagenation from '../../components/pagination';
-import { useAppContext } from '../../components/context';
+import { useAppContext, getCurrentyFormatter } from '../../components/context';
 
 const i18n = {
   en: {
@@ -62,6 +62,7 @@ export default function Forms(props) {
   const { offset, size, total, records } = props;
   const { lang } = useAppContext();
   const texts = i18n[lang];
+  var formatter = getCurrentyFormatter();
   const recordPerPage = size;
   var currentPage = 0;
   if (offset >= recordPerPage) {
@@ -95,7 +96,7 @@ export default function Forms(props) {
       <div className='row m-2 p-2'>
         <table className="table table-hover">
           <thead>
-            <tr className="table-primary">
+            <tr className="table-primary text-center">
               <th>{texts.id}</th>
               <th>{texts.customer}</th>
               <th>{texts.amount}</th>
@@ -144,9 +145,9 @@ export default function Forms(props) {
                 return (
                   <tr key={id}>
                     <td>{id}</td>
-                    <td>{customer}</td>
-                    <td>{amount}</td>
-                    <td>{minimum_asset}</td>
+                    <td className='text-center'>{customer}</td>
+                    <td className='text-end'>{formatter.format(amount)}</td>
+                    <td className='text-end'>{formatter.format(minimum_asset)}</td>
                     <td>{bank}</td>
                     <td>{statusLabel}</td>
                     <td>{modeLabel}</td>

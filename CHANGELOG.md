@@ -1,5 +1,11 @@
 # Change Log for Demo A Client
 
+## [0.2.2] - 2023-01-07
+
+### Changed
+
+- Optimize navbar and list
+
 ## [0.2.0] - 2023-01-05
 
 ### Changed
