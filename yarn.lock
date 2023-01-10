@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@bitauth/libauth@^1.19.1":
+  version "1.19.1"
+  resolved "https://registry.npmmirror.com/@bitauth/libauth/-/libauth-1.19.1.tgz#713751bbc09815b667f8fe00a1cc5b0f3bf45dd1"
+  integrity sha512-R524tD5VwOt3QRHr7N518nqTVR/HKgfWL4LypekcGuNQN8R4PWScvuRcRzrY39A28kLztMv+TJdiKuMNbkU1ug==
+
 "@next/env@13.1.1":
   version "13.1.1"
   resolved "https://registry.npmmirror.com/@next/env/-/env-13.1.1.tgz#6ff26488dc7674ef2bfdd1ca28fe43eed1113bea"
@@ -72,6 +77,18 @@
   resolved "https://registry.npmmirror.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-13.1.1.tgz#c209a37da13be27b722f9c40c40ab4b094866244"
   integrity sha512-mVF0/3/5QAc5EGVnb8ll31nNvf3BWpPY4pBb84tk+BfQglWLqc5AC9q1Ht/YMWiEgs8ALNKEQ3GQnbY0bJF2Gg==
 
+"@noble/ed25519@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.npmmirror.com/@noble/ed25519/-/ed25519-1.7.1.tgz#6899660f6fbb97798a6fbd227227c4589a454724"
+  integrity sha512-Rk4SkJFaXZiznFyC/t77Q0NKS4FL7TLJJsVG2V2oiEq3kJVeTdxysEe/yRWSpnWMe808XRDJ+VFh5pt/FN5plw==
+
+"@supercharge/strings@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmmirror.com/@supercharge/strings/-/strings-2.0.0.tgz#638289dd8318e9031a4d08fea7c2cdfa70dad08d"
+  integrity sha512-x4l2Xfm9Hcag12FBoRtTYQYdgHanL9LMNo9AV2ZDJ6JQyJ7ftgS17DWGEEtsohVhEpAJ0YQk2DeZz0JsdIQuDA==
+  dependencies:
+    uuid "~9.0.0"
+
 "@swc/helpers@0.4.14":
   version "0.4.14"
   resolved "https://registry.npmmirror.com/@swc/helpers/-/helpers-0.4.14.tgz#1352ac6d95e3617ccb7c1498ff019654f1e12a74"
@@ -98,6 +115,11 @@ client-only@0.0.1:
   version "0.0.1"
   resolved "https://registry.npmmirror.com/client-only/-/client-only-0.0.1.tgz#38bba5d403c41ab150bff64a95c85013cf73bca1"
   integrity sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==
+
+crypto-js@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.npmmirror.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
@@ -193,3 +215,8 @@ tslib@^2.4.0:
   version "2.4.1"
   resolved "https://registry.npmmirror.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
+
+uuid@~9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmmirror.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==

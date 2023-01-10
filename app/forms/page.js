@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import Forms from './request_forms.js';
+import path from 'path';
+import { promises as fs } from 'fs';
+import { NewClientFromAccess } from '../chain_sdk';
 
 const pseudoData = {
   offset: 1,
@@ -71,6 +74,13 @@ const pseudoData = {
 
 async function getData() {
   //todo: parse pagination parameters from query
+  const filePath = path.join(process.cwd(), '../access_key.json');
+  const content = await fs.readFile(filePath, 'utf8');
+  const sdk = NewClientFromAccess(content);
+  const port = 8900;
+  await sdk.connect('', port);
+  const status = await sdk.getStatus();
+  const schemas = await sdk.querySchemas(0, 10);
   return pseudoData;
 }
 
