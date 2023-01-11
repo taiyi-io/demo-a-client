@@ -25,34 +25,69 @@ const payloadPathData = "data";
 const keyEncodeMethodEd25519Hex = "ed25519-hex";
 const defaultKeyEncodeMethod = keyEncodeMethodEd25519Hex;
 
+export interface AccessKey {
+    private_data: {
+        version: number,
+        id: string,
+        encode_method: string,
+        private_key: string,
+    }
+}
 
-export function NewClientFromAccess(data) {
-    const { id, encode_method, private_key } = data.private_data;
+export interface ChainStatus {
+    world_version: string,
+    block_height: number,
+    previous_block: string,
+    genesis_block: string,
+    allocated_transaction_id: string,
+}
+
+export interface SchemaRecords {
+    schemas: string[],
+    limit: number,
+    offset: number,
+    total: number,
+}
+
+interface requestOptions {
+    method: string,
+    body?: string,
+    headers?: object,
+}
+
+interface sessionResponse {
+    session: string, 
+    timeout: number, 
+    address: string,
+}
+
+export function NewClientFromAccess(key: AccessKey) {
+    const { id, encode_method, private_key } = key.private_data;
     if (defaultKeyEncodeMethod === encode_method) {
         if (!isHex(private_key)) {
             throw new Error('invalid key format');
         }
-        var decoded = hexToBin(private_key).slice(0, 32);
+        let decoded = hexToBin(private_key).slice(0, 32);
         return NewClient(id, decoded);
     } else {
         throw new Error('unsupport encode method: ' + encode_method);
     }
 }
 
-export function NewClient(accessID, privateKey) {
+export function NewClient(accessID: string, privateKey: Uint8Array) {
     return new TaiyiClient(accessID, privateKey);
 }
 
 export class TaiyiClient {
-    #_accessID = '';
-    #_privateKey = [];
-    #_apiBase = '';
-    #_domain = '';
-    #_nonce = '';
-    #_sessionID = '';
-    #_timeout = 0;
-    #_localIP = '';
-    constructor(accessID, privateKey) {
+    #_accessID: string = '';
+    #_privateKey: Uint8Array;
+    #_apiBase: string = '';
+    #_domain: string = '';
+    #_nonce: string = '';
+    #_sessionID: string = '';
+    #_timeout: number = 0;
+    #_localIP: string = '';
+    constructor(accessID: string, privateKey: Uint8Array) {
         this.#_accessID = accessID;
         this.#_privateKey = privateKey;
         this.#_apiBase = '';
@@ -67,11 +102,11 @@ export class TaiyiClient {
         return SDKVersion;
     }
 
-    async connect(host, port) {
+    async connect(host: string, port: number) {
         return this.connectToDomain(host, port, defaultDomainName);
     }
 
-    async connectToDomain(host, port, domainName) {
+    async connectToDomain(host: string, port: number, domainName: string) {
         if ('' === host) {
             host = defaultDomainHost;
         }
@@ -98,11 +133,12 @@ export class TaiyiClient {
             id: this.#_accessID,
             nonce: this.#_nonce,
         };
-        var headers = {};
+        let headers = {};
         headers[headerNameTimestamp] = timestamp;
         headers[headerNameSignatureAlgorithm] = signagureAlgorithm;
         headers[headerNameSignature] = signature;
-        const { session, timeout, address } = await this.#rawRequest('post', '/sessions/', headers, requestData);
+        let resp = await this.#rawRequest('post', '/sessions/', headers, requestData);
+        const { session, timeout, address } = (resp as sessionResponse);
         this.#_sessionID = session;
         this.#_timeout = timeout;
         this.#_localIP = address;
@@ -112,24 +148,18 @@ export class TaiyiClient {
 
     async activate() {
         const url = this.#mapToAPI('/sessions/');
-        return this.#doRequest(('put', url));
+        return this.#doRequest('put', url);
     }
 
     /**
      * Get Current Chain Status
      * 
-     * @returns {
-     *  world_version,
-     *  block_height,
-     *  previous_block,
-     *  genesis_block,
-     *  allocated_transaction_id,
-     * } return status object
+     * @returns {Promise<ChainStatus>} return status object
      * 
      */
-    async getStatus() {
+    async getStatus(): Promise<ChainStatus> {
         const url = this.#mapToDomain('/status');
-        return this.#fetchResponse('get', url);
+        return this.#fetchResponse('get', url) as Promise<ChainStatus>;
     }
 
     /**
@@ -137,37 +167,32 @@ export class TaiyiClient {
      * 
      * @param {int} queryStart start offset when querying
      * @param {int} maxRecord max records could returne
-     * @returns {
-     *  schemas,
-     *  limit,
-     *  offset,
-     *  total
-     * }
+     * @returns {Promise<SchemaRecords>} return records
      */
-    async querySchemas(queryStart, maxRecord) {
+    async querySchemas(queryStart: number, maxRecord: number): Promise<SchemaRecords> {
         const url = this.#mapToDomain('/schemas/');
         const condition = {
             offset: queryStart,
             limit: maxRecord,
         }
-        return this.#fetchResponseWithPayload('post', url, condition);
+        return this.#fetchResponseWithPayload('post', url, condition) as Promise<SchemaRecords>;
     }
 
-    #newNonce() {
+    #newNonce(): string {
         const nonceLength = 16;
         return Strings.random(nonceLength);
     }
 
-    async #base64Signature(obj) {
+    async #base64Signature(obj: object): Promise<string> {
         const content = Buffer.from(JSON.stringify(obj), 'utf-8');
         const signed = await ed25519.sign(content, this.#_privateKey);
         return Buffer.from(signed).toString(signatureEncode);
     }
 
-    async #rawRequest(method, path, headers, payload) {
+    async #rawRequest(method: string, path: string, headers: object, payload: object): Promise<object> {
         const url = this.#mapToAPI(path);
         headers[headerContentType] = contentTypeJSON;
-        var options = {
+        let options: requestOptions = {
             method: method,
             headers: headers,
         }
@@ -177,58 +202,58 @@ export class TaiyiClient {
         return this.#getResult(url, options);
     }
 
-    async #peekRequest(method, url) {
-        var request = this.#prepareOptions(method, url, null);
-        var resp = await fetch(request);
+    async #peekRequest(method: string, url: string): Promise<boolean> {
+        let options = await this.#prepareOptions(method, url, null);
+        let resp = await fetch(url, options);
         return resp.ok;
     }
 
-    async #validateResult(request) {
-        this.#parseResponse(request);
+    async #validateResult(url: string, options: object) {
+        this.#parseResponse(url, options);
     }
 
-    async #parseResponse(url, options) {
-        var resp = await fetch(url, options);
+    async #parseResponse(url: string, options: object): Promise<object>{
+        let resp = await fetch(url, options);
         if (!resp.ok) {
             throw new Error('fetch result failed with status ' + resp.status + ': ' + resp.statusText);
         }
-        var payload = await resp.json();
+        let payload = await resp.json();
         if (0 != payload[payloadPathErrorCode]) {
             throw new Error('fetch failed: ' + payload[payloadPathErrorMessage]);
         }
         return payload;
     }
 
-    async #getResult(url, options) {
-        var payload = await this.#parseResponse(url, options);
+    async #getResult(url: string, options: object): Promise<object> {
+        let payload = await this.#parseResponse(url, options);
         return payload[payloadPathData];
     }
 
-    async #doRequest(method, url) {
-        var options = await this.#prepareOptions(method, url, null);
-        return this.#validateResult(url, options);
+    async #doRequest(method: string, url: string) {
+        let options = await this.#prepareOptions(method, url, null);
+        this.#validateResult(url, options);
     }
 
-    async #doRequestWithPayload(method, url, payload) {
-        var options = await this.#prepareOptions(method, url, payload);
-        return this.#validateResult(url, options);
+    async #doRequestWithPayload(method: string, url: string, payload: object) {
+        let options = await this.#prepareOptions(method, url, payload);
+        this.#validateResult(url, options);
     }
 
-    async #fetchResponse(method, url) {
-        var options = await this.#prepareOptions(method, url, null);
+    async #fetchResponse(method: string, url: string): Promise<object> {
+        let options = await this.#prepareOptions(method, url, null);
         return this.#getResult(url, options)
     }
 
-    async #fetchResponseWithPayload(method, url, payload) {
-        var options = await this.#prepareOptions(method, url, payload);
+    async #fetchResponseWithPayload(method: string, url: string, payload: object): Promise<object> {
+        let options = await this.#prepareOptions(method, url, payload);
         return this.#getResult(url, options)
     }
 
-    async #prepareOptions(method, url, payload) {
+    async #prepareOptions(method: string, url: string, payload: object): Promise<object> {
         const urlObject = new URL(url);
         const now = new Date();
         const timestamp = now.toISOString();
-        var signatureContent = {
+        let signatureContent = {
             id: this.#_sessionID,
             method: method.toUpperCase(),
             url: urlObject.pathname,
@@ -238,19 +263,18 @@ export class TaiyiClient {
             nonce: this.#_nonce,
             signature_algorithm: signatureMethodEd25519,
         }
-        var options = {
+        let options: requestOptions = {
             method: method
         };
-        var headers = {};
+        let headers = {};
         let bodyContent = '';
         if (payload) {
             headers[headerContentType] = contentTypeJSON;
             bodyContent = JSON.stringify(payload);
             options.body = bodyContent;
         }
-        var request = new Request(url, options);
         if ('post' === method || 'put' === method || 'delete' === method || 'patch' === method) {
-            var hash = CryptoJS.SHA256(bodyContent);
+            let hash = CryptoJS.SHA256(bodyContent);
             signatureContent.body = CryptoJS.enc.Base64.stringify(hash);
         }
         const signature = await this.#base64Signature(signatureContent);
@@ -265,11 +289,11 @@ export class TaiyiClient {
         return options;
     }
 
-    #mapToAPI(path) {
+    #mapToAPI(path: string): string {
         return this.#_apiBase + path;
     }
 
-    #mapToDomain(path) {
+    #mapToDomain(path: string): string {
         return this.#_apiBase + '/domains/' + this.#_domain + path;
     }
 }

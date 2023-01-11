@@ -1,5 +1,5 @@
 import Forms from './request_forms.js';
-import ChainProvider from '../../components/chain_provider.js';
+import ChainProvider from '../../components/chain_provider';
 
 const pseudoData = {
   offset: 1,

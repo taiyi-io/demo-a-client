@@ -1,4 +1,5 @@
 import DetailPanel from './detail_panel';
+import ChainProvider from '../../../../components/chain_provider';
 
 const pseudoData = {
   customer: "lisi",
@@ -19,6 +20,11 @@ const pseudoData = {
 
 async function getData(id) {
   //todo: parse pagination parameters from query
+    // const host = '192.168.25.223';
+    const host = '192.168.3.47';
+    const port = 9100;
+    var conn = await ChainProvider.connect(host, port);
+    const status = await conn.getStatus();
   return {
     id: id,
     ...pseudoData,

@@ -1,5 +1,11 @@
 # Change Log for Demo A Client
 
+## [0.2.3] - 2023-01-12
+
+### Added
+
+- Chain SDK using typescript
+
 ## [0.2.2] - 2023-01-07
 
 ### Changed
