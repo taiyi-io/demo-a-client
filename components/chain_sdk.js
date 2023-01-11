@@ -4,8 +4,6 @@ import CryptoJS from 'crypto-js';
 import Strings from '@supercharge/strings/dist';
 import * as ed25519 from '@noble/ed25519';
 
-const http = require('http');
-
 const SDKVersion = '0.1.0';
 const APIVersion = '1';
 // const projectName = 'Taiyi';
@@ -108,7 +106,7 @@ export class TaiyiClient {
         this.#_sessionID = session;
         this.#_timeout = timeout;
         this.#_localIP = address;
-        process.stdout.write('session allocated: ' + this.#_sessionID + '\n');
+        // process.stdout.write('session allocated: ' + this.#_sessionID + '\n');
         return;
     }
 
@@ -261,9 +259,9 @@ export class TaiyiClient {
         headers[headerNameSignatureAlgorithm] = signatureMethodEd25519;
         headers[headerNameSignature] = signature;
         options.headers = headers;
-        process.stdout.write('session: ' + this.#_sessionID + '\n');
-        process.stdout.write('signature: ' + signature + '\n');
-        process.stdout.write('content: ' + JSON.stringify(signatureContent) + '\n');
+        // process.stdout.write('session: ' + this.#_sessionID + '\n');
+        // process.stdout.write('signature: ' + signature + '\n');
+        // process.stdout.write('content: ' + JSON.stringify(signatureContent) + '\n');
         return options;
     }
 
