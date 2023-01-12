@@ -1,4 +1,4 @@
-import Forms from './request_forms.js';
+import Forms from './request_forms';
 import ChainProvider from '../../components/chain_provider';
 
 const pseudoData = {
@@ -69,13 +69,13 @@ const pseudoData = {
   ]
 }
 
+async function doTest() {
+
+}
+
 async function getData() {
   //todo: parse pagination parameters from query
-
-  // const host = '192.168.25.223';
-  const host = '192.168.3.47';
-  const port = 9100;
-  var conn = await ChainProvider.connect(host, port);
+  var conn = await ChainProvider.connect();
   const status = await conn.getStatus();
   const schemas = await conn.querySchemas(0, 10);
   return pseudoData;
@@ -84,5 +84,5 @@ async function getData() {
 export default async function Page() {
   const forms = await getData();
   const { offset, size, total, records } = forms;
-  return <Forms offset={offset} size={size} total={total} records={records}/>
+  return <Forms offset={offset} size={size} total={total} records={records} />
 }

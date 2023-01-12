@@ -17,13 +17,9 @@ const pseudoData = {
   verify_time: '2022-12-21 19:43:07'
 };
 
-
 async function getData(id) {
   //todo: parse pagination parameters from query
-    // const host = '192.168.25.223';
-    const host = '192.168.3.47';
-    const port = 9100;
-    var conn = await ChainProvider.connect(host, port);
+    var conn = await ChainProvider.connect();
     const status = await conn.getStatus();
   return {
     id: id,

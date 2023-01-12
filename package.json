@@ -2,6 +2,10 @@
   "name": "demo-a-client",
   "description": "Web client of corporation A for demo",
   "version": "0.2.2",
+  "chain": {
+    "host": "192.168.25.223",
+    "port": 9100
+  },
   "dependencies": {
     "@bitauth/libauth": "^1.19.1",
     "@noble/ed25519": "^1.7.1",

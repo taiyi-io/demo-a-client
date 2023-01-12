@@ -3,6 +3,7 @@ import { hexToBin, isHex } from '@bitauth/libauth';
 import CryptoJS from 'crypto-js';
 import Strings from '@supercharge/strings/dist';
 import * as ed25519 from '@noble/ed25519';
+import exp from 'constants';
 
 const SDKVersion = '0.1.0';
 const APIVersion = '1';
@@ -24,6 +25,16 @@ const payloadPathErrorMessage = "message";
 const payloadPathData = "data";
 const keyEncodeMethodEd25519Hex = "ed25519-hex";
 const defaultKeyEncodeMethod = keyEncodeMethodEd25519Hex;
+
+export enum PropertType {
+    String = "string",
+    Boolean = "bool",
+    Integer = "int",
+    Float = "float",
+    Currency = "currency",
+    Collection = "collection",
+    Document = "document",
+}
 
 export interface AccessKey {
     private_data: {
@@ -49,6 +60,80 @@ export interface SchemaRecords {
     total: number,
 }
 
+export interface DocumentProperty {
+    name: string,
+    type: PropertType,
+    indexed?: boolean,
+}
+
+export interface DocumentSchema {
+    name: string,
+    properties?: DocumentProperty[],
+}
+
+export interface Document {
+    id: string,
+    content: string
+}
+
+export enum FilterOperator {
+    Equal = 0,
+    NotEqual,
+    GreaterThan,
+    LesserThan,
+    GreaterOrEqual,
+    LesserOrEqual
+}
+
+export interface ConditionFilter {
+    property: string,
+    operator: FilterOperator,
+    value: string
+}
+
+export interface TraceLog {
+    version: number,
+    timestamp: string,
+    operate: string,
+    invoker: string,
+    block?: string,
+    transaction?: string,
+    confirmed: boolean
+}
+
+export interface ContractStep {
+    action: string,
+    params?: string[],
+}
+
+export interface BlockData {
+    id: string,
+    timestamp: string,
+    previous_block: string,
+    height: number,
+    transactions: number,
+    content: string,
+}
+
+export interface TransactionData{
+    block: string,
+    transaction: string,
+    timestamp: string,
+    validated: boolean,
+    content: string,
+}
+
+export interface ContractDefine{
+    steps: ContractStep[],
+}
+
+export interface LogRecord {
+    latest_version: number,
+    logs?: TraceLog,
+}
+
+
+
 interface requestOptions {
     method: string,
     body?: string,
@@ -56,8 +141,8 @@ interface requestOptions {
 }
 
 interface sessionResponse {
-    session: string, 
-    timeout: number, 
+    session: string,
+    timeout: number,
     address: string,
 }
 
@@ -98,8 +183,20 @@ export class TaiyiClient {
         this.#_localIP = '';
     }
 
-    getVersion() {
+    get Version() {
         return SDKVersion;
+    }
+
+    get SessionID() {
+        return this.#_sessionID;
+    }
+
+    get AccessID() {
+        return this.#_accessID;
+    }
+
+    get LocalIP() {
+        return this.#_localIP;
     }
 
     async connect(host: string, port: number) {
@@ -137,7 +234,7 @@ export class TaiyiClient {
         headers[headerNameTimestamp] = timestamp;
         headers[headerNameSignatureAlgorithm] = signagureAlgorithm;
         headers[headerNameSignature] = signature;
-        let resp = await this.#rawRequest('post', '/sessions/', headers, requestData);
+        let resp = await this.#rawRequest('POST', '/sessions/', headers, requestData);
         const { session, timeout, address } = (resp as sessionResponse);
         this.#_sessionID = session;
         this.#_timeout = timeout;
@@ -148,7 +245,7 @@ export class TaiyiClient {
 
     async activate() {
         const url = this.#mapToAPI('/sessions/');
-        return this.#doRequest('put', url);
+        return this.#doRequest('PUT', url);
     }
 
     /**
@@ -175,7 +272,64 @@ export class TaiyiClient {
             offset: queryStart,
             limit: maxRecord,
         }
-        return this.#fetchResponseWithPayload('post', url, condition) as Promise<SchemaRecords>;
+        return this.#fetchResponseWithPayload('POST', url, condition) as Promise<SchemaRecords>;
+    }
+
+    /**
+     * Rebuild index of a schema
+     * @param schemaName schema for rebuilding
+     */
+    async rebuildIndex(schemaName: string) {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain('/schemas/' + schemaName + '/index/');
+        this.#doRequest('POST', url);
+    }
+
+    /**
+     * Create a new schema
+     * @param schemaName Name of new schema
+     * @param properties Properties of new schema
+     */
+    async createSchema(schemaName: string, properties: DocumentProperty[]) {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName);
+        this.#doRequestWithPayload("POST", url, properties);
+    }
+
+    async updateSchema(schemaName: string, properties: DocumentProperty[]) {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName);
+        this.#doRequestWithPayload("PUT", url, properties);
+    }
+    
+    async deleteSchema(schemaName: string) {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName);
+        this.#doRequest("DELETE", url);
+    }
+    
+    async hasSchema(schemaName: string): Promise<boolean> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName);
+        return this.#peekRequest("HEAD", url);
+    }
+    
+    async getSchema(schemaName: string): Promise<DocumentSchema> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName);
+        return (this.#fetchResponse('GET', url) as Promise<DocumentSchema>);
     }
 
     #newNonce(): string {
@@ -212,7 +366,7 @@ export class TaiyiClient {
         this.#parseResponse(url, options);
     }
 
-    async #parseResponse(url: string, options: object): Promise<object>{
+    async #parseResponse(url: string, options: object): Promise<object> {
         let resp = await fetch(url, options);
         if (!resp.ok) {
             throw new Error('fetch result failed with status ' + resp.status + ': ' + resp.statusText);
@@ -273,7 +427,7 @@ export class TaiyiClient {
             bodyContent = JSON.stringify(payload);
             options.body = bodyContent;
         }
-        if ('post' === method || 'put' === method || 'delete' === method || 'patch' === method) {
+        if ('POST' === method || 'PUT' === method || 'delete' === method || 'patch' === method) {
             let hash = CryptoJS.SHA256(bodyContent);
             signatureContent.body = CryptoJS.enc.Base64.stringify(hash);
         }
