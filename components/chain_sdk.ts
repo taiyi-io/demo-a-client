@@ -264,7 +264,7 @@ export class TaiyiClient {
      */
     async getStatus(): Promise<ChainStatus> {
         const url = this.#mapToDomain('/status');
-        return this.#fetchResponse('get', url) as Promise<ChainStatus>;
+        return this.#fetchResponse(RequestMethod.GET, url) as Promise<ChainStatus>;
     }
 
     /**
@@ -287,12 +287,12 @@ export class TaiyiClient {
      * Rebuild index of a schema
      * @param schemaName schema for rebuilding
      */
-    async rebuildIndex(schemaName: string) {
+    async rebuildIndex(schemaName: string): Promise<object> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain('/schemas/' + schemaName + '/index/');
-        this.#doRequest(RequestMethod.POST, url);
+        return this.#doRequest(RequestMethod.POST, url);
     }
 
     /**
@@ -300,35 +300,35 @@ export class TaiyiClient {
      * @param schemaName Name of new schema
      * @param properties Properties of new schema
      */
-    async createSchema(schemaName: string, properties: DocumentProperty[]) {
+    async createSchema(schemaName: string, properties: DocumentProperty[]): Promise<object> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        this.#doRequestWithPayload(RequestMethod.POST, url, properties);
+        return this.#doRequestWithPayload(RequestMethod.POST, url, properties);        
     }
 
-    async updateSchema(schemaName: string, properties: DocumentProperty[]) {
+    async updateSchema(schemaName: string, properties: DocumentProperty[]): Promise<object> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        this.#doRequestWithPayload(RequestMethod.PUT, url, properties);
+        return this.#doRequestWithPayload(RequestMethod.PUT, url, properties);
     }
     
-    async deleteSchema(schemaName: string) {
+    async deleteSchema(schemaName: string): Promise<object> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        this.#doRequest(RequestMethod.DELETE, url);
+        return this.#doRequest(RequestMethod.DELETE, url);        
     }
     
     async hasSchema(schemaName: string): Promise<boolean> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
-        const url = this.#mapToDomain("/schemas/" + schemaName);
+        const url = this.#mapToDomain("/schemas/" + schemaName);        
         return this.#peekRequest(RequestMethod.HEAD, url);
     }
     
@@ -370,8 +370,8 @@ export class TaiyiClient {
         return resp.ok;
     }
 
-    async #validateResult(url: string, options: object) {
-        this.#parseResponse(url, options);
+    async #validateResult(url: string, options: object): Promise<object> {
+        return this.#parseResponse(url, options);
     }
 
     async #parseResponse(url: string, options: object): Promise<object> {
@@ -391,14 +391,14 @@ export class TaiyiClient {
         return payload[payloadPathData];
     }
 
-    async #doRequest(method: RequestMethod, url: string) {
+    async #doRequest(method: RequestMethod, url: string): Promise<object> {
         let options = await this.#prepareOptions(method, url, null);
-        this.#validateResult(url, options);
+        return this.#validateResult(url, options)
     }
 
-    async #doRequestWithPayload(method: RequestMethod, url: string, payload: object) {
+    async #doRequestWithPayload(method: RequestMethod, url: string, payload: object): Promise<object> {
         let options = await this.#prepareOptions(method, url, payload);
-        this.#validateResult(url, options);
+        return this.#validateResult(url, options);
     }
 
     async #fetchResponse(method: RequestMethod, url: string): Promise<object> {

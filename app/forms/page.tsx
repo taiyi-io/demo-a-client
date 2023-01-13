@@ -87,12 +87,16 @@ async function doTest(conn: TaiyiClient) {
 }
 
 async function testSchema(conn: TaiyiClient) {
-  const schemaName = 'sample-test11';
+  const schemaName = 'sample-test111';
   console.log('schema test begin...');
   {
     let result = await conn.hasSchema(schemaName);
     if (result){
-      throw new Error('schema ' + schemaName + ' already exsits');
+      console.log('schema ' + schemaName + ' already exsits');
+      await conn.deleteSchema(schemaName);
+      console.log('previous schema ' + schemaName + ' deleted');
+    }else{
+      console.log('schema ' + schemaName + ' not exists')
     }
     console.log('test: check schema ok')
   }
@@ -113,7 +117,7 @@ async function testSchema(conn: TaiyiClient) {
     ];
     await conn.createSchema(schemaName, properties);
     let current = await conn.getSchema(schemaName);
-    console.log('schema created:\n' + JSON.stringify(current))
+    console.log('test schema created ok:\n' + JSON.stringify(current))
   }
   {
     let properties: DocumentProperty[] = [
@@ -136,12 +140,13 @@ async function testSchema(conn: TaiyiClient) {
     ];
     await conn.updateSchema(schemaName, properties);
     let current = await conn.getSchema(schemaName);
-    console.log('schema updated:\n' + JSON.stringify(current))
+    console.log('test schema updated ok:\n' + JSON.stringify(current))
   }
   {
     await conn.deleteSchema(schemaName);
-    console.log('schema deleted: ' + schemaName);
+    console.log('test schema deleted ok: ' + schemaName);
   }
+  console.log('schema test complete')
 }
 
 async function getData(): Promise<RecordList> {
