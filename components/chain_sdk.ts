@@ -23,7 +23,7 @@ const contentTypeJSON = "application/json";
 const payloadPathErrorCode = "error_code";
 const payloadPathErrorMessage = "message";
 const payloadPathData = "data";
-const keyEncodeMethodEd25519Hex = "ed25519-hex";
+const keyEncodeMethodEd25519Hex = 'ed25519-hex';
 const defaultKeyEncodeMethod = keyEncodeMethodEd25519Hex;
 
 export enum PropertType {
@@ -36,7 +36,7 @@ export enum PropertType {
     Document = "document",
 }
 
-enum RequestMethod{
+enum RequestMethod {
     GET = 'GET',
     PUT = 'PUT',
     POST = 'POST',
@@ -49,7 +49,7 @@ export interface AccessKey {
     private_data: {
         version: number,
         id: string,
-        encode_method: RequestMethod,
+        encode_method: string,
         private_key: string,
     }
 }
@@ -100,6 +100,16 @@ export interface ConditionFilter {
     value: string
 }
 
+//todo: implement QueryCondition
+export interface QueryCondition {
+
+}
+
+//todo: implement DocumentRecords
+export interface DocumentRecords {
+
+}
+
 export interface TraceLog {
     version: number,
     timestamp: string,
@@ -124,7 +134,14 @@ export interface BlockData {
     content: string,
 }
 
-export interface TransactionData{
+export interface BlockRecords {
+    blocks: string[],
+    from: number,
+    to: number,
+    height: number,
+}
+
+export interface TransactionData {
     block: string,
     transaction: string,
     timestamp: string,
@@ -132,14 +149,38 @@ export interface TransactionData{
     content: string,
 }
 
-export interface ContractDefine{
+export interface TransactionRecords {
+    transactions?: string[],
+    offset: number,
+    limit: number,
+    total: number,
+    has_more: boolean,
+}
+
+export interface ContractInfo {
+    name: string,
+    version: number,
+    modified_time: string,
+    enabled: boolean,
+    trace?: boolean,
+}
+
+export interface ContractDefine {
     steps: ContractStep[],
 }
 
-export interface LogRecord {
-    latest_version: number,
-    logs?: TraceLog,
+export interface ContractRecords {
+    contracts: ContractInfo[],
+    limit: number,
+    offset: number,
+    total: number,
 }
+
+export interface LogRecords {
+    latest_version: number,
+    logs?: TraceLog[],
+}
+
 
 
 interface requestOptions {
@@ -207,11 +248,24 @@ export class TaiyiClient {
         return this.#_localIP;
     }
 
-    async connect(host: string, port: number) {
+    /**
+     * connect to gateway for default domain
+     * @param host gateway host, IPv4 format
+     * @param port gateway port for API
+     * @returns response payload
+     */
+    async connect(host: string, port: number): Promise<object> {
         return this.connectToDomain(host, port, defaultDomainName);
     }
 
-    async connectToDomain(host: string, port: number, domainName: string) {
+    /**
+     * connect to a specified domain
+     * @param host gateway host, IPv4 format
+     * @param port gateway port for API
+     * @param domainName domain name for connecting
+     * @returns response payload
+     */
+    async connectToDomain(host: string, port: number, domainName: string): Promise<object> {
         if ('' === host) {
             host = defaultDomainHost;
         }
@@ -251,10 +305,17 @@ export class TaiyiClient {
         return;
     }
 
-    async activate() {
+    /**
+     * Keep established session alive
+     * @returns response payload
+     */
+    async activate(): Promise<object> {
         const url = this.#mapToAPI('/sessions/');
         return this.#doRequest(RequestMethod.PUT, url);
     }
+
+
+    //Chain and block operations begin
 
     /**
      * Get Current Chain Status
@@ -266,6 +327,75 @@ export class TaiyiClient {
         const url = this.#mapToDomain('/status');
         return this.#fetchResponse(RequestMethod.GET, url) as Promise<ChainStatus>;
     }
+
+    /**
+     * Query blocks with pagination
+     * @param {number} beginHeight begin block height, start from 1
+     * @param {number} endHeight end block height, start from 1
+     * @returns {BlockRecords} list of block records
+     */
+    async queryBlocks(beginHeight: number, endHeight: number): Promise<BlockRecords> {
+        if (endHeight <= beginHeight) {
+            throw new Error("end height " + endHeight + " must greater than begin height " + beginHeight);
+        }
+        const url = this.#mapToDomain("/blocks/");
+        const condition = {
+            from: beginHeight,
+            to: endHeight,
+        };
+        return (this.#fetchResponseWithPayload(RequestMethod.POST, url, condition) as Promise<BlockRecords>);
+    }
+
+    /**
+     * Get block data by ID
+     * @param {string} blockID block ID
+     * @returns {BlockData} block data
+     */
+    async getBlock(blockID: string): Promise<BlockData> {
+        if (!blockID) {
+            throw new Error('block ID required');
+        }
+        const url = this.#mapToDomain("/blocks/" + blockID);
+        return (this.#fetchResponse(RequestMethod.GET, url) as Promise<BlockData>);
+    }
+
+    /**
+     * Query transactions using pagination
+     * @param {string} blockID block ID
+     * @param {number} start start offset for querying, start from 0
+     * @param {number} maxRecord max records returned
+     * @returns {TransactionRecords} transaction records
+     */
+    async queryTransactions(blockID: string, start: number, maxRecord: number): Promise<TransactionRecords> {
+        if (!blockID) {
+            throw new Error('block ID required');
+        }
+        const url = this.#mapToDomain("/blocks/" + blockID + "/transactions/");
+        const condition = {
+            offset: start,
+            limit: maxRecord,
+        };
+        return (this.#fetchResponseWithPayload(RequestMethod.POST, url, condition) as Promise<TransactionRecords>);
+    }
+
+    /**
+     * Get data of a transaction
+     * @param {string} blockID block ID
+     * @param {string} transID transaction ID
+     * @returns {TransactionData} transaction data
+     */
+    async getTransaction(blockID: string, transID: string): Promise<TransactionData> {
+        if (!blockID) {
+            throw new Error('block ID required');
+        }
+        if (!transID) {
+            throw new Error('transaction ID required');
+        }
+        const url = this.#mapToDomain("/blocks/" + blockID + "/transactions/" + transID);
+        return (this.#fetchResponse(RequestMethod.GET, url) as Promise<TransactionData>);
+    }
+
+    //Schema operations
 
     /**
      * Return list of current schemas
@@ -280,7 +410,7 @@ export class TaiyiClient {
             offset: queryStart,
             limit: maxRecord,
         }
-        return this.#fetchResponseWithPayload(RequestMethod.POST, url, condition) as Promise<SchemaRecords>;
+        return (this.#fetchResponseWithPayload(RequestMethod.POST, url, condition) as Promise<SchemaRecords>);
     }
 
     /**
@@ -305,9 +435,15 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        return this.#doRequestWithPayload(RequestMethod.POST, url, properties);        
+        return this.#doRequestWithPayload(RequestMethod.POST, url, properties);
     }
 
+    /**
+     * Update exist schema 
+     * @param schemaName Name of schema
+     * @param properties Properties of schema for updating
+     * @returns response payload
+     */
     async updateSchema(schemaName: string, properties: DocumentProperty[]): Promise<object> {
         if (!schemaName) {
             throw new Error('schema name required');
@@ -315,23 +451,38 @@ export class TaiyiClient {
         const url = this.#mapToDomain("/schemas/" + schemaName);
         return this.#doRequestWithPayload(RequestMethod.PUT, url, properties);
     }
-    
+
+    /**
+     * Delete a schema
+     * @param schemaName name of target schema
+     * @returns response payload
+     */
     async deleteSchema(schemaName: string): Promise<object> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        return this.#doRequest(RequestMethod.DELETE, url);        
+        return this.#doRequest(RequestMethod.DELETE, url);
     }
-    
+
+    /**
+     * Check if a schema exstis
+     * @param schemaName target schema name
+     * @returns true: exists/false: not exists
+     */
     async hasSchema(schemaName: string): Promise<boolean> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
-        const url = this.#mapToDomain("/schemas/" + schemaName);        
+        const url = this.#mapToDomain("/schemas/" + schemaName);
         return this.#peekRequest(RequestMethod.HEAD, url);
     }
-    
+
+    /**
+     * Get a schema 
+     * @param {string} schemaName target schema name
+     * @returns {DocumentSchema} schema define
+     */
     async getSchema(schemaName: string): Promise<DocumentSchema> {
         if (!schemaName) {
             throw new Error('schema name required');
@@ -339,6 +490,252 @@ export class TaiyiClient {
         const url = this.#mapToDomain("/schemas/" + schemaName);
         return (this.#fetchResponse(RequestMethod.GET, url) as Promise<DocumentSchema>);
     }
+
+    /**
+     * Get trace log of a schema 
+     * @param {string} schemaName schema name
+     * @returns {LogRecords} list of log records
+     */
+    async getSchemaLog(schemaName: string): Promise<LogRecords> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/logs/");
+        return (this.#fetchResponse(RequestMethod.GET, url) as Promise<LogRecords>);
+    }
+
+    //Document Operations
+
+    /**
+     * Add a new document to schema
+     * @param {string} schemaName schema name
+     * @param {string} docID optional document ID, generate when omit
+     * @param {string} docContent document content in JSON format
+     * @returns {string} document ID
+     */
+    async addDocument(schemaName: string, docID: string, docContent: string): Promise<string> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/");
+        const payload = {
+            id: docID,
+            content: docContent,
+        }
+        interface schemaResponse {
+            id: string,
+        }
+        let resp = await (this.#fetchResponseWithPayload(RequestMethod.POST, url, payload) as Promise<schemaResponse>);
+        return resp.id;
+    }
+
+    /**
+     * Update content of a document
+     * @param {string} schemaName schema name
+     * @param {string} docID document ID
+     * @param {string} docContent document content in JSON format
+     * @returns response payload
+     */
+    async updateDocument(schemaName: string, docID: string, docContent: string): Promise<object> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        if (!docID) {
+            throw new Error('document ID required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID);
+        const payload = {
+            content: docContent,
+        }
+        return this.#doRequestWithPayload(RequestMethod.PUT, url, payload);
+    }
+
+    /**
+     * Update property value of a document
+     * @param {string} schemaName schema name
+     * @param {string} docID document ID
+     * @param {string} propertyName property for updating
+     * @param {PropertType} valueType value type of property
+     * @param {any} value value for property
+     * @returns {void}
+     */
+    async updateDocumentProperty(schemaName: string, docID: string, propertyName: string, valueType: PropertType,
+        value: any): Promise<void> {
+        //todo: 
+    }
+
+    /**
+     * Remove a document
+     * @param {string} schemaName schema name
+     * @param {string} docID document ID
+     * @returns {void}
+     */
+    async removeDocument(schemaName: string, docID: string): Promise<void> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        if (!docID) {
+            throw new Error('document ID required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID);
+        await this.#doRequest(RequestMethod.DELETE, url);
+        return;
+    }
+
+    /**
+     * Check if document exists
+     * @param {string} schemaName schema name
+     * @param {string} docID document ID
+     * @returns {boolean} true: exists / false: not exists
+     */
+    async hasDocument(schemaName: string, docID: string): Promise<boolean> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        if (!docID) {
+            throw new Error('document ID required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID);
+        return this.#peekRequest(RequestMethod.HEAD, url);
+    }
+
+    /**
+     * Get document content
+     * @param {string} schemaName schema name
+     * @param {string} docID document ID
+     * @returns {string} content in JSON format
+     */
+    async getDocument(schemaName: string, docID: string): Promise<string> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        if (!docID) {
+            throw new Error('document ID required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID);
+        let doc = await (this.#fetchResponse(RequestMethod.GET, url) as Promise<Document>);
+        return doc.content;
+    }
+
+    /**
+     * Query trace log of a document
+     * @param {string} schemaName schema name
+     * @param {string} docID document ID
+     * @returns {LogRecords} trace log
+     */
+    async getDocumentLogs(schemaName: string, docID: string): Promise<LogRecords> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        if (!docID) {
+            throw new Error('document ID required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID + "/logs/");
+        return (this.#fetchResponse(RequestMethod.GET, url) as Promise<LogRecords>);
+    }
+
+    async queryDocuments(schemaName: string, condition: QueryCondition): Promise<DocumentRecords>{
+        
+    }
+
+    //Smart contract operations
+
+    /**
+     * Query contracts with pagination
+     * @param queryStart start offset for querying, begin from 0
+     * @param maxRecord max record count returned
+     * @returns ContractRecords
+     */
+    async queryContracts(queryStart: number, maxRecord: number): Promise<ContractRecords> {
+        const url = this.#mapToDomain("/contracts/");
+        const condtion = {
+            offset: queryStart,
+            limit: maxRecord,
+        }
+        return (this.#fetchResponseWithPayload(RequestMethod.POST, url, condtion) as Promise<ContractRecords>);
+    }
+
+    /**
+     * Deploy a contract define
+     * @param contractName contract name
+     * @param define contract define
+     * @returns response payload
+     */
+    async deployContract(contractName: string, define: ContractDefine): Promise<object> {
+        if (!contractName) {
+            throw new Error('contract name required');
+        }
+        const url = this.#mapToDomain("/contracts/" + contractName);
+        const payload = {
+            content: JSON.stringify(define),
+        }
+        return this.#doRequestWithPayload(RequestMethod.PUT, url, payload);
+    }
+
+    /**
+     * Invoke a contract with parameters
+     * @param contractName contract name
+     * @param parameters parameters for invoking contract
+     * @returns response payload
+     */
+    async callContract(contractName: string, parameters: string[]): Promise<object> {
+        if (!contractName) {
+            throw new Error('contract name required');
+        }
+        const url = this.#mapToDomain("/contracts/" + contractName + '/sessions/');
+        const payload = {
+            parameters: parameters,
+        }
+        return this.#doRequestWithPayload(RequestMethod.POST, url, payload);
+    }
+
+    /**
+     * Withdraw a contract define
+     * @param contractName contract name
+     * @returns response payload
+     */
+    async withdrawContract(contractName: string): Promise<object> {
+        if (!contractName) {
+            throw new Error('contract name required');
+        }
+        const url = this.#mapToDomain("/contracts/" + contractName);
+        return this.#doRequest(RequestMethod.DELETE, url);
+    }
+
+    /**
+     * Enable contract tracing
+     * @param contractName contract name
+     * @returns response payload
+     */
+    async enableContractTrace(contractName: string): Promise<object> {
+        if (!contractName) {
+            throw new Error('contract name required');
+        }
+        const url = this.#mapToDomain("/contracts/" + contractName + '/trace/');
+        const payload = {
+            enable: true,
+        }
+        return this.#doRequestWithPayload(RequestMethod.PUT, url, payload);
+    }
+
+    /**
+     * Enable contract tracing
+     * @param contractName contract name
+     * @returns response payload
+     */
+    async disbleContractTrace(contractName: string): Promise<object> {
+        if (!contractName) {
+            throw new Error('contract name required');
+        }
+        const url = this.#mapToDomain("/contracts/" + contractName + '/trace/');
+        const payload = {
+            enable: false,
+        }
+        return this.#doRequestWithPayload(RequestMethod.PUT, url, payload);
+    }
+
+
+    //private functions
 
     #newNonce(): string {
         const nonceLength = 16;
@@ -435,7 +832,7 @@ export class TaiyiClient {
             bodyContent = JSON.stringify(payload);
             options.body = bodyContent;
         }
-        if (RequestMethod.POST === method || RequestMethod.PUT === method || RequestMethod.DELETE === method 
+        if (RequestMethod.POST === method || RequestMethod.PUT === method || RequestMethod.DELETE === method
             || RequestMethod.PATCH === method) {
             let hash = CryptoJS.SHA256(bodyContent);
             signatureContent.body = CryptoJS.enc.Base64.stringify(hash);
