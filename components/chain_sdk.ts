@@ -36,11 +36,20 @@ export enum PropertType {
     Document = "document",
 }
 
+enum RequestMethod{
+    GET = 'GET',
+    PUT = 'PUT',
+    POST = 'POST',
+    DELETE = 'DELETE',
+    HEAD = 'HEAD',
+    PATCH = 'PATCH',
+}
+
 export interface AccessKey {
     private_data: {
         version: number,
         id: string,
-        encode_method: string,
+        encode_method: RequestMethod,
         private_key: string,
     }
 }
@@ -133,9 +142,8 @@ export interface LogRecord {
 }
 
 
-
 interface requestOptions {
-    method: string,
+    method: RequestMethod,
     body?: string,
     headers?: object,
 }
@@ -234,7 +242,7 @@ export class TaiyiClient {
         headers[headerNameTimestamp] = timestamp;
         headers[headerNameSignatureAlgorithm] = signagureAlgorithm;
         headers[headerNameSignature] = signature;
-        let resp = await this.#rawRequest('POST', '/sessions/', headers, requestData);
+        let resp = await this.#rawRequest(RequestMethod.POST, '/sessions/', headers, requestData);
         const { session, timeout, address } = (resp as sessionResponse);
         this.#_sessionID = session;
         this.#_timeout = timeout;
@@ -245,7 +253,7 @@ export class TaiyiClient {
 
     async activate() {
         const url = this.#mapToAPI('/sessions/');
-        return this.#doRequest('PUT', url);
+        return this.#doRequest(RequestMethod.PUT, url);
     }
 
     /**
@@ -272,7 +280,7 @@ export class TaiyiClient {
             offset: queryStart,
             limit: maxRecord,
         }
-        return this.#fetchResponseWithPayload('POST', url, condition) as Promise<SchemaRecords>;
+        return this.#fetchResponseWithPayload(RequestMethod.POST, url, condition) as Promise<SchemaRecords>;
     }
 
     /**
@@ -284,7 +292,7 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain('/schemas/' + schemaName + '/index/');
-        this.#doRequest('POST', url);
+        this.#doRequest(RequestMethod.POST, url);
     }
 
     /**
@@ -297,7 +305,7 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        this.#doRequestWithPayload("POST", url, properties);
+        this.#doRequestWithPayload(RequestMethod.POST, url, properties);
     }
 
     async updateSchema(schemaName: string, properties: DocumentProperty[]) {
@@ -305,7 +313,7 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        this.#doRequestWithPayload("PUT", url, properties);
+        this.#doRequestWithPayload(RequestMethod.PUT, url, properties);
     }
     
     async deleteSchema(schemaName: string) {
@@ -313,7 +321,7 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        this.#doRequest("DELETE", url);
+        this.#doRequest(RequestMethod.DELETE, url);
     }
     
     async hasSchema(schemaName: string): Promise<boolean> {
@@ -321,7 +329,7 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        return this.#peekRequest("HEAD", url);
+        return this.#peekRequest(RequestMethod.HEAD, url);
     }
     
     async getSchema(schemaName: string): Promise<DocumentSchema> {
@@ -329,7 +337,7 @@ export class TaiyiClient {
             throw new Error('schema name required');
         }
         const url = this.#mapToDomain("/schemas/" + schemaName);
-        return (this.#fetchResponse('GET', url) as Promise<DocumentSchema>);
+        return (this.#fetchResponse(RequestMethod.GET, url) as Promise<DocumentSchema>);
     }
 
     #newNonce(): string {
@@ -343,7 +351,7 @@ export class TaiyiClient {
         return Buffer.from(signed).toString(signatureEncode);
     }
 
-    async #rawRequest(method: string, path: string, headers: object, payload: object): Promise<object> {
+    async #rawRequest(method: RequestMethod, path: string, headers: object, payload: object): Promise<object> {
         const url = this.#mapToAPI(path);
         headers[headerContentType] = contentTypeJSON;
         let options: requestOptions = {
@@ -356,7 +364,7 @@ export class TaiyiClient {
         return this.#getResult(url, options);
     }
 
-    async #peekRequest(method: string, url: string): Promise<boolean> {
+    async #peekRequest(method: RequestMethod, url: string): Promise<boolean> {
         let options = await this.#prepareOptions(method, url, null);
         let resp = await fetch(url, options);
         return resp.ok;
@@ -383,27 +391,27 @@ export class TaiyiClient {
         return payload[payloadPathData];
     }
 
-    async #doRequest(method: string, url: string) {
+    async #doRequest(method: RequestMethod, url: string) {
         let options = await this.#prepareOptions(method, url, null);
         this.#validateResult(url, options);
     }
 
-    async #doRequestWithPayload(method: string, url: string, payload: object) {
+    async #doRequestWithPayload(method: RequestMethod, url: string, payload: object) {
         let options = await this.#prepareOptions(method, url, payload);
         this.#validateResult(url, options);
     }
 
-    async #fetchResponse(method: string, url: string): Promise<object> {
+    async #fetchResponse(method: RequestMethod, url: string): Promise<object> {
         let options = await this.#prepareOptions(method, url, null);
         return this.#getResult(url, options)
     }
 
-    async #fetchResponseWithPayload(method: string, url: string, payload: object): Promise<object> {
+    async #fetchResponseWithPayload(method: RequestMethod, url: string, payload: object): Promise<object> {
         let options = await this.#prepareOptions(method, url, payload);
         return this.#getResult(url, options)
     }
 
-    async #prepareOptions(method: string, url: string, payload: object): Promise<object> {
+    async #prepareOptions(method: RequestMethod, url: string, payload: object): Promise<object> {
         const urlObject = new URL(url);
         const now = new Date();
         const timestamp = now.toISOString();
@@ -427,7 +435,8 @@ export class TaiyiClient {
             bodyContent = JSON.stringify(payload);
             options.body = bodyContent;
         }
-        if ('POST' === method || 'PUT' === method || 'delete' === method || 'patch' === method) {
+        if (RequestMethod.POST === method || RequestMethod.PUT === method || RequestMethod.DELETE === method 
+            || RequestMethod.PATCH === method) {
             let hash = CryptoJS.SHA256(bodyContent);
             signatureContent.body = CryptoJS.enc.Base64.stringify(hash);
         }

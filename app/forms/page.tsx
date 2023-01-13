@@ -87,11 +87,12 @@ async function doTest(conn: TaiyiClient) {
 }
 
 async function testSchema(conn: TaiyiClient) {
-  const schemaName = 'sample-test00';
+  const schemaName = 'sample-test11';
+  console.log('schema test begin...');
   {
     let result = await conn.hasSchema(schemaName);
     if (result){
-      throw new Error('schema ' + schemaName + 'already exsits');
+      throw new Error('schema ' + schemaName + ' already exsits');
     }
     console.log('test: check schema ok')
   }
