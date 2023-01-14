@@ -100,14 +100,20 @@ export interface ConditionFilter {
     value: string
 }
 
-//todo: implement QueryCondition
 export interface QueryCondition {
-
+    filters?: ConditionFilter[],
+    since?: string,
+    offset: number,
+    limit?: number,
+    order?: string,
+    descend: boolean,
 }
 
-//todo: implement DocumentRecords
 export interface DocumentRecords {
-
+    documents?: Document[],
+    limit: number,
+    offset: number,
+    total: number,
 }
 
 export interface TraceLog {
@@ -250,8 +256,8 @@ export class TaiyiClient {
 
     /**
      * connect to gateway for default domain
-     * @param host gateway host, IPv4 format
-     * @param port gateway port for API
+     * @param {string} host gateway host, IPv4 format
+     * @param {number} port gateway port for API
      * @returns response payload
      */
     async connect(host: string, port: number): Promise<object> {
@@ -260,9 +266,9 @@ export class TaiyiClient {
 
     /**
      * connect to a specified domain
-     * @param host gateway host, IPv4 format
-     * @param port gateway port for API
-     * @param domainName domain name for connecting
+     * @param {string} host gateway host, IPv4 format
+     * @param {number} port gateway port for API
+     * @param {string} domainName domain name for connecting
      * @returns response payload
      */
     async connectToDomain(host: string, port: number, domainName: string): Promise<object> {
@@ -307,9 +313,8 @@ export class TaiyiClient {
 
     /**
      * Keep established session alive
-     * @returns response payload
      */
-    async activate(): Promise<object> {
+    async activate(): Promise<void> {
         const url = this.#mapToAPI('/sessions/');
         return this.#doRequest(RequestMethod.PUT, url);
     }
@@ -415,9 +420,9 @@ export class TaiyiClient {
 
     /**
      * Rebuild index of a schema
-     * @param schemaName schema for rebuilding
+     * @param {string} schemaName schema for rebuilding
      */
-    async rebuildIndex(schemaName: string): Promise<object> {
+    async rebuildIndex(schemaName: string): Promise<void> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
@@ -427,10 +432,10 @@ export class TaiyiClient {
 
     /**
      * Create a new schema
-     * @param schemaName Name of new schema
-     * @param properties Properties of new schema
+     * @param {string} schemaName Name of new schema
+     * @param {DocumentProperty[]} properties Properties of new schema
      */
-    async createSchema(schemaName: string, properties: DocumentProperty[]): Promise<object> {
+    async createSchema(schemaName: string, properties: DocumentProperty[]): Promise<void> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
@@ -440,11 +445,10 @@ export class TaiyiClient {
 
     /**
      * Update exist schema 
-     * @param schemaName Name of schema
-     * @param properties Properties of schema for updating
-     * @returns response payload
+     * @param  {string} schemaName Name of schema
+     * @param  {DocumentProperty[]} properties Properties of schema for updating
      */
-    async updateSchema(schemaName: string, properties: DocumentProperty[]): Promise<object> {
+    async updateSchema(schemaName: string, properties: DocumentProperty[]): Promise<void> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
@@ -455,9 +459,8 @@ export class TaiyiClient {
     /**
      * Delete a schema
      * @param schemaName name of target schema
-     * @returns response payload
      */
-    async deleteSchema(schemaName: string): Promise<object> {
+    async deleteSchema(schemaName: string): Promise<void> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
@@ -467,8 +470,8 @@ export class TaiyiClient {
 
     /**
      * Check if a schema exstis
-     * @param schemaName target schema name
-     * @returns true: exists/false: not exists
+     * @param {string} schemaName target schema name
+     * @returns  {boolean} true: exists/false: not exists
      */
     async hasSchema(schemaName: string): Promise<boolean> {
         if (!schemaName) {
@@ -534,9 +537,8 @@ export class TaiyiClient {
      * @param {string} schemaName schema name
      * @param {string} docID document ID
      * @param {string} docContent document content in JSON format
-     * @returns response payload
      */
-    async updateDocument(schemaName: string, docID: string, docContent: string): Promise<object> {
+    async updateDocument(schemaName: string, docID: string, docContent: string): Promise<void> {
         if (!schemaName) {
             throw new Error('schema name required');
         }
@@ -557,18 +559,30 @@ export class TaiyiClient {
      * @param {string} propertyName property for updating
      * @param {PropertType} valueType value type of property
      * @param {any} value value for property
-     * @returns {void}
      */
     async updateDocumentProperty(schemaName: string, docID: string, propertyName: string, valueType: PropertType,
         value: any): Promise<void> {
-        //todo: 
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        if (!docID) {
+            throw new Error('document ID required');
+        }
+        if (!propertyName) {
+            throw new Error('property name required');
+        }
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID);
+        const payload = {
+            type: valueType,
+            value: value
+        };
+        return this.#doRequestWithPayload(RequestMethod.PUT, url, payload);
     }
 
     /**
      * Remove a document
      * @param {string} schemaName schema name
      * @param {string} docID document ID
-     * @returns {void}
      */
     async removeDocument(schemaName: string, docID: string): Promise<void> {
         if (!schemaName) {
@@ -634,16 +648,26 @@ export class TaiyiClient {
         return (this.#fetchResponse(RequestMethod.GET, url) as Promise<LogRecords>);
     }
 
-    async queryDocuments(schemaName: string, condition: QueryCondition): Promise<DocumentRecords>{
-        
+    /**
+     * Query documents by condition
+     * @param {string} schemaName schema name 
+     * @param {QueryCondition} condition query condition
+     * @returns {DocumentRecords} matched documents
+     */
+    async queryDocuments(schemaName: string, condition: QueryCondition): Promise<DocumentRecords> {
+        if (!schemaName) {
+            throw new Error('schema name required');
+        }
+        const url = this.#mapToDomain("/queries/schemas/" + schemaName + "/docs/");
+        return (this.#fetchResponseWithPayload(RequestMethod.POST, url, condition) as Promise<DocumentRecords>)
     }
 
     //Smart contract operations
 
     /**
      * Query contracts with pagination
-     * @param queryStart start offset for querying, begin from 0
-     * @param maxRecord max record count returned
+     * @param {number} queryStart start offset for querying, begin from 0
+     * @param {number} maxRecord max record count returned
      * @returns ContractRecords
      */
     async queryContracts(queryStart: number, maxRecord: number): Promise<ContractRecords> {
@@ -657,11 +681,10 @@ export class TaiyiClient {
 
     /**
      * Deploy a contract define
-     * @param contractName contract name
-     * @param define contract define
-     * @returns response payload
+     * @param {string} contractName contract name
+     * @param {ContractDefine} define contract define
      */
-    async deployContract(contractName: string, define: ContractDefine): Promise<object> {
+    async deployContract(contractName: string, define: ContractDefine): Promise<void> {
         if (!contractName) {
             throw new Error('contract name required');
         }
@@ -674,11 +697,10 @@ export class TaiyiClient {
 
     /**
      * Invoke a contract with parameters
-     * @param contractName contract name
-     * @param parameters parameters for invoking contract
-     * @returns response payload
+     * @param {string} contractName contract name
+     * @param {string[]} parameters parameters for invoking contract
      */
-    async callContract(contractName: string, parameters: string[]): Promise<object> {
+    async callContract(contractName: string, parameters: string[]): Promise<void> {
         if (!contractName) {
             throw new Error('contract name required');
         }
@@ -691,10 +713,9 @@ export class TaiyiClient {
 
     /**
      * Withdraw a contract define
-     * @param contractName contract name
-     * @returns response payload
+     * @param {string} contractName contract name
      */
-    async withdrawContract(contractName: string): Promise<object> {
+    async withdrawContract(contractName: string): Promise<void> {
         if (!contractName) {
             throw new Error('contract name required');
         }
@@ -704,10 +725,9 @@ export class TaiyiClient {
 
     /**
      * Enable contract tracing
-     * @param contractName contract name
-     * @returns response payload
+     * @param {string} contractName contract name
      */
-    async enableContractTrace(contractName: string): Promise<object> {
+    async enableContractTrace(contractName: string): Promise<void> {
         if (!contractName) {
             throw new Error('contract name required');
         }
@@ -720,10 +740,9 @@ export class TaiyiClient {
 
     /**
      * Enable contract tracing
-     * @param contractName contract name
-     * @returns response payload
+     * @param {string} contractName contract name
      */
-    async disbleContractTrace(contractName: string): Promise<object> {
+    async disbleContractTrace(contractName: string): Promise<void> {
         if (!contractName) {
             throw new Error('contract name required');
         }
@@ -767,8 +786,9 @@ export class TaiyiClient {
         return resp.ok;
     }
 
-    async #validateResult(url: string, options: object): Promise<object> {
-        return this.#parseResponse(url, options);
+    async #validateResult(url: string, options: object): Promise<void> {
+        await this.#parseResponse(url, options);
+        return;
     }
 
     async #parseResponse(url: string, options: object): Promise<object> {
@@ -788,12 +808,12 @@ export class TaiyiClient {
         return payload[payloadPathData];
     }
 
-    async #doRequest(method: RequestMethod, url: string): Promise<object> {
+    async #doRequest(method: RequestMethod, url: string): Promise<void> {
         let options = await this.#prepareOptions(method, url, null);
         return this.#validateResult(url, options)
     }
 
-    async #doRequestWithPayload(method: RequestMethod, url: string, payload: object): Promise<object> {
+    async #doRequestWithPayload(method: RequestMethod, url: string, payload: object): Promise<void> {
         let options = await this.#prepareOptions(method, url, payload);
         return this.#validateResult(url, options);
     }
