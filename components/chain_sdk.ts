@@ -26,7 +26,7 @@ const payloadPathData = "data";
 const keyEncodeMethodEd25519Hex = 'ed25519-hex';
 const defaultKeyEncodeMethod = keyEncodeMethodEd25519Hex;
 
-export enum PropertType {
+export enum PropertyType {
     String = "string",
     Boolean = "bool",
     Integer = "int",
@@ -71,7 +71,7 @@ export interface SchemaRecords {
 
 export interface DocumentProperty {
     name: string,
-    type: PropertType,
+    type: PropertyType,
     indexed?: boolean,
 }
 
@@ -557,10 +557,10 @@ export class TaiyiClient {
      * @param {string} schemaName schema name
      * @param {string} docID document ID
      * @param {string} propertyName property for updating
-     * @param {PropertType} valueType value type of property
+     * @param {PropertyType} valueType value type of property
      * @param {any} value value for property
      */
-    async updateDocumentProperty(schemaName: string, docID: string, propertyName: string, valueType: PropertType,
+    async updateDocumentProperty(schemaName: string, docID: string, propertyName: string, valueType: PropertyType,
         value: any): Promise<void> {
         if (!schemaName) {
             throw new Error('schema name required');
@@ -742,7 +742,7 @@ export class TaiyiClient {
      * Enable contract tracing
      * @param {string} contractName contract name
      */
-    async disbleContractTrace(contractName: string): Promise<void> {
+    async disableContractTrace(contractName: string): Promise<void> {
         if (!contractName) {
             throw new Error('contract name required');
         }

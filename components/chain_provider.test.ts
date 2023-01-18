@@ -1,71 +1,71 @@
 import ChainProvider from "./chain_provider";
-import {DocumentProperty, PropertType} from './chain_sdk';
+import { DocumentProperty, PropertyType, ContractDefine, ContractStep } from './chain_sdk';
 
-test('Test Schemas', async() =>{
+test('Test Schemas', async () => {
     var conn = await ChainProvider.connect();
     const schemaName = 'js-test-case1-schema';
     console.log('schema test begin...');
     {
-      let result = await conn.hasSchema(schemaName);
-      if (result){
-        console.log('schema ' + schemaName + ' already exsits');
+        let result = await conn.hasSchema(schemaName);
+        if (result) {
+            console.log('schema ' + schemaName + ' already exsits');
+            await conn.deleteSchema(schemaName);
+            console.log('previous schema ' + schemaName + ' deleted');
+        } else {
+            console.log('schema ' + schemaName + ' not exists')
+        }
+        console.log('test: check schema ok')
+    }
+    {
+        let properties: DocumentProperty[] = [
+            {
+                name: 'name',
+                type: PropertyType.String
+            },
+            {
+                name: 'age',
+                type: PropertyType.Integer
+            },
+            {
+                name: 'available',
+                type: PropertyType.Boolean
+            }
+        ];
+        await conn.createSchema(schemaName, properties);
+        let current = await conn.getSchema(schemaName);
+        console.log('test schema created ok:\n' + JSON.stringify(current))
+    }
+    {
+        let properties: DocumentProperty[] = [
+            {
+                name: 'name',
+                type: PropertyType.String
+            },
+            {
+                name: 'age',
+                type: PropertyType.Integer
+            },
+            {
+                name: 'amount',
+                type: PropertyType.Currency
+            },
+            {
+                name: 'country',
+                type: PropertyType.String
+            }
+        ];
+        await conn.updateSchema(schemaName, properties);
+        let current = await conn.getSchema(schemaName);
+        console.log('test schema updated ok:\n' + JSON.stringify(current))
+    }
+    {
         await conn.deleteSchema(schemaName);
-        console.log('previous schema ' + schemaName + ' deleted');
-      }else{
-        console.log('schema ' + schemaName + ' not exists')
-      }
-      console.log('test: check schema ok')
-    }
-    {
-      let properties: DocumentProperty[] = [
-        {
-          name: 'name',
-          type: PropertType.String
-        },
-        {
-          name: 'age',
-          type: PropertType.Integer
-        },
-        {
-          name: 'available',
-          type: PropertType.Boolean
-        }
-      ];
-      await conn.createSchema(schemaName, properties);
-      let current = await conn.getSchema(schemaName);
-      console.log('test schema created ok:\n' + JSON.stringify(current))
-    }
-    {
-      let properties: DocumentProperty[] = [
-        {
-          name: 'name',
-          type: PropertType.String
-        },
-        {
-          name: 'age',
-          type: PropertType.Integer
-        },
-        {
-          name: 'amount',
-          type: PropertType.Currency
-        },
-        {
-          name: 'country',
-          type: PropertType.String
-        }
-      ];
-      await conn.updateSchema(schemaName, properties);
-      let current = await conn.getSchema(schemaName);
-      console.log('test schema updated ok:\n' + JSON.stringify(current))
-    }
-    {
-      await conn.deleteSchema(schemaName);
-      console.log('test schema deleted ok: ' + schemaName);
+        console.log('test schema deleted ok: ' + schemaName);
     }
     console.log('schema interfaces tested');
 });
 
-test('Test Documents', async() =>{
+test('Test Documents', async () => {
     const docCount = 10;
     const propertyNameAge = 'age';
     const propertyNameEnabled = 'enabled';
@@ -74,12 +74,12 @@ test('Test Documents', async() =>{
     var conn = await ChainProvider.connect();
     console.log('schema test begin...');
     {
-      let result = await conn.hasSchema(schemaName);
-      if (result){
-        console.log('schema ' + schemaName + ' already exsits');
-        await conn.deleteSchema(schemaName);
-        console.log('previous schema ' + schemaName + ' deleted');
-      }
+        let result = await conn.hasSchema(schemaName);
+        if (result) {
+            console.log('schema ' + schemaName + ' already exsits');
+            await conn.deleteSchema(schemaName);
+            console.log('previous schema ' + schemaName + ' deleted');
+        }
     }
 
     var properties: DocumentProperty[] = [];
@@ -87,7 +87,7 @@ test('Test Documents', async() =>{
 
     var docList: string[] = [];
     var content = '{}';
-    for(let i = 0; i < docCount; i++){
+    for (let i = 0; i < docCount; i++) {
         let docID = docPrefix + (i + 1);
         let respID = await conn.addDocument(schemaName, docID, content);
         console.log('doc ' + respID + ' added');
@@ -97,23 +97,23 @@ test('Test Documents', async() =>{
     properties = [
         {
             name: propertyNameAge,
-            type: PropertType.Integer,
+            type: PropertyType.Integer,
         },
         {
             name: propertyNameEnabled,
-            type: PropertType.Boolean,
+            type: PropertyType.Boolean,
         },
     ]
     await conn.updateSchema(schemaName, properties);
     console.log('schema updated');
-    for(let i = 0; i < docCount; i++){
+    for (let i = 0; i < docCount; i++) {
         let docID = docPrefix + (i + 1);
-        if (0 === i % 2){
+        if (0 === i % 2) {
             content = JSON.stringify({
                 age: 0,
                 enabled: false
             });
-        }else{
+        } else {
             content = JSON.stringify({
                 age: 0,
                 enabled: true
@@ -122,14 +122,14 @@ test('Test Documents', async() =>{
         await conn.updateDocument(schemaName, docID, content);
         console.log('doc ' + docID + ' updated');
     }
-    for(let i = 0; i < docCount; i++){
+    for (let i = 0; i < docCount; i++) {
         let docID = docPrefix + (i + 1);
-        await conn.updateDocumentProperty(schemaName, docID, propertyNameAge, PropertType.Integer, i);
+        await conn.updateDocumentProperty(schemaName, docID, propertyNameAge, PropertyType.Integer, i);
         console.log('property age of doc ' + docID + ' updated');
     }
 
 
-    for (let docID of docList){
+    for (let docID of docList) {
         await conn.removeDocument(schemaName, docID);
         console.log('doc ' + docID + ' removed');
     }
@@ -137,4 +137,128 @@ test('Test Documents', async() =>{
     await conn.deleteSchema(schemaName)
     console.log('test schema ' + schemaName + ' deleted')
     console.log('document interfaces tested');
+})
+
+test('Test Contracts', async () => {
+    const propertyCatalog = "catalog";
+    const propertyBalance = "balance";
+    const propertyNumber = "number";
+    const propertyAvailable = "available";
+    const propertyWeight = "weight";
+    const schemaName = 'js-test-case3-contract';
+    let properties: DocumentProperty[] = [
+        {
+            name: propertyCatalog,
+            type: PropertyType.String,
+            indexed: true,
+        },
+        {
+            name: propertyBalance,
+            type: PropertyType.Currency,
+            indexed: true,
+        },
+        {
+            name: propertyNumber,
+            type: PropertyType.Integer,
+            indexed: true,
+        },
+        {
+            name: propertyAvailable,
+            type: PropertyType.Boolean,
+        },
+        {
+            name: propertyWeight,
+            type: PropertyType.Float,
+            indexed: true,
+        },
+    ];
+    var conn = await ChainProvider.connect();
+    console.log('contract test begin...');
+    {
+        let result = await conn.hasSchema(schemaName);
+        if (result) {
+            console.log('schema ' + schemaName + ' already exsits');
+            await conn.deleteSchema(schemaName);
+            console.log('previous schema ' + schemaName + ' deleted');
+        }
+    }
+    await conn.createSchema(schemaName, properties);
+    var varName = "$s"
+    var createContract: ContractDefine = {
+        steps: [
+            {
+                action: "create_doc",
+                params: [varName, "@1", "@2"],
+            },
+            {
+                action: "set_property",
+                params: [varName, propertyCatalog, "@3"],
+            },
+            {
+                action: "set_property",
+                params: [varName, propertyBalance, "@4"],
+            },
+            {
+                action: "set_property",
+                params: [varName, propertyNumber, "@5"],
+            },
+            {
+                action: "set_property",
+                params: [varName, propertyAvailable, "@6"],
+            },
+            {
+                action: "set_property",
+                params: [varName, propertyWeight, "@7"],
+            },
+            {
+                action: "update_doc",
+                params: ["@1", varName],
+            },
+            {
+                action: "submit",
+            },
+        ],
+    };
+
+    var deleteContract: ContractDefine = {
+        steps: [
+            {
+                action: "delete_doc",
+                params: ["@1", "@2"],
+            },
+            {
+                action: "submit",
+            },
+        ],
+    };
+
+    const createContractName = 'contract_create';
+    await conn.deployContract(createContractName, createContract);
+    const deleteContractName = 'contract_delete';
+    await conn.deployContract(deleteContractName, deleteContract);
+    const docID = 'contract-doc';
+    var parameters: string[] = [
+        schemaName,
+        docID,
+        schemaName,
+        Math.random().toString(10),
+        Math.floor(Math.random() * 1000).toString(),
+        Math.random() > 0.5? 'true': 'false',
+        (Math.random() * 200).toFixed(2),
+    ];
+    await conn.enableContractTrace(createContractName);
+    await conn.callContract(createContractName, parameters);
+    await conn.callContract(deleteContractName, [schemaName, docID]);
+    var {total} = await conn.queryContracts(0, 10);
+    console.log(total + ' contracts returned before withdraw');
+    await conn.disableContractTrace(createContractName);
+    await conn.withdrawContract(createContractName);
+    await conn.withdrawContract(deleteContractName);
+    total = (await conn.queryContracts(0, 10)).total;
+    console.log(total + ' contracts returned after withdraw');
+
+    //clean environment
+    await conn.deleteSchema(schemaName)
+    console.log('test schema ' + schemaName + ' deleted')
+    console.log('contract interfaces tested');
 })
