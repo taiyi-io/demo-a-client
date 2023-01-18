@@ -1,7 +1,7 @@
 import Forms from './request_forms';
 import ChainProvider from '../../components/chain_provider';
 import { RequestRecord } from '../../components/record';
-import { TaiyiClient, DocumentProperty, PropertType } from '../../components/chain_sdk';
+import { TaiyiClient } from '../../components/chain_sdk';
 
 interface RecordList {
   offset: number,
@@ -83,70 +83,6 @@ async function doTest(conn: TaiyiClient) {
   console.log('status: ' + JSON.stringify(status) + '\n');
   const schemas = await conn.querySchemas(0, 10);
   console.log('schemas: ' + JSON.stringify(schemas));
-  await testSchema(conn);
-}
-
-async function testSchema(conn: TaiyiClient) {
-  const schemaName = 'sample-test111';
-  console.log('schema test begin...');
-  {
-    let result = await conn.hasSchema(schemaName);
-    if (result){
-      console.log('schema ' + schemaName + ' already exsits');
-      await conn.deleteSchema(schemaName);
-      console.log('previous schema ' + schemaName + ' deleted');
-    }else{
-      console.log('schema ' + schemaName + ' not exists')
-    }
-    console.log('test: check schema ok')
-  }
-  {
-    let properties: DocumentProperty[] = [
-      {
-        name: 'name',
-        type: PropertType.String
-      },
-      {
-        name: 'age',
-        type: PropertType.Integer
-      },
-      {
-        name: 'available',
-        type: PropertType.Boolean
-      }
-    ];
-    await conn.createSchema(schemaName, properties);
-    let current = await conn.getSchema(schemaName);
-    console.log('test schema created ok:\n' + JSON.stringify(current))
-  }
-  {
-    let properties: DocumentProperty[] = [
-      {
-        name: 'name',
-        type: PropertType.String
-      },
-      {
-        name: 'age',
-        type: PropertType.Integer
-      },
-      {
-        name: 'amount',
-        type: PropertType.Currency
-      },
-      {
-        name: 'country',
-        type: PropertType.String
-      }
-    ];
-    await conn.updateSchema(schemaName, properties);
-    let current = await conn.getSchema(schemaName);
-    console.log('test schema updated ok:\n' + JSON.stringify(current))
-  }
-  {
-    await conn.deleteSchema(schemaName);
-    console.log('test schema deleted ok: ' + schemaName);
-  }
-  console.log('schema test complete')
 }
 
 async function getData(): Promise<RecordList> {
