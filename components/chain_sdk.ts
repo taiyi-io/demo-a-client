@@ -571,7 +571,7 @@ export class TaiyiClient {
         if (!propertyName) {
             throw new Error('property name required');
         }
-        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID);
+        const url = this.#mapToDomain("/schemas/" + schemaName + "/docs/" + docID + '/properties/' + propertyName);
         const payload = {
             type: valueType,
             value: value
