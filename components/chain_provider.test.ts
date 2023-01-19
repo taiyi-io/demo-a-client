@@ -72,7 +72,7 @@ test('Test Documents', async () => {
     const schemaName = 'js-test-case2-document';
     const docPrefix = 'js-test-case2-';
     var conn = await ChainProvider.connect();
-    console.log('schema test begin...');
+    console.log('document test begin...');
     {
         let result = await conn.hasSchema(schemaName);
         if (result) {
@@ -243,13 +243,13 @@ test('Test Contracts', async () => {
         schemaName,
         Math.random().toString(10),
         Math.floor(Math.random() * 1000).toString(),
-        Math.random() > 0.5? 'true': 'false',
+        Math.random() > 0.5 ? 'true' : 'false',
         (Math.random() * 200).toFixed(2),
     ];
     await conn.enableContractTrace(createContractName);
     await conn.callContract(createContractName, parameters);
     await conn.callContract(deleteContractName, [schemaName, docID]);
-    var {total} = await conn.queryContracts(0, 10);
+    var { total } = await conn.queryContracts(0, 10);
     console.log(total + ' contracts returned before withdraw');
     await conn.disableContractTrace(createContractName);
     await conn.withdrawContract(createContractName);
@@ -261,4 +261,41 @@ test('Test Contracts', async () => {
     await conn.deleteSchema(schemaName)
     console.log('test schema ' + schemaName + ' deleted')
     console.log('contract interfaces tested');
+})
+
+test('Test Chain', async () => {
+    var conn = await ChainProvider.connect();
+    console.log('schema test begin...');
+    let status = await conn.getStatus();
+    console.log('world version ' + status.world_version + ', block height ' + status.block_height);
+    console.log('genesis block: ' + status.genesis_block + ', previous block: ' + status.previous_block);
+    const maxRecord = 5;
+    const lowestHeight = 1;
+    let endHeight = status.block_height;
+    let beginHeight;
+    if (endHeight <= maxRecord) {
+        beginHeight = lowestHeight;
+    } else {
+        beginHeight = endHeight - maxRecord;
+    }
+    let blockRecords = await conn.queryBlocks(beginHeight, endHeight);
+    console.log('block range from ' + blockRecords.from + ' to ' + blockRecords.to + ' at height ' + blockRecords.height + ' returned');
+    for (let blockID of blockRecords.blocks) {
+        let blockData = await conn.getBlock(blockID);
+        console.log('block ' + blockID + ' created at ' + blockData.timestamp + ' on height ' + blockData.height);
+        console.log('previous block: => ' + blockData.previous_block);
+        console.log('included transactions: ' + blockData.transactions);
+        let transactionRecords = await conn.queryTransactions(blockID, 0, maxRecord);
+        console.log(transactionRecords.transactions.length + ' / ' + transactionRecords.total + ' transactions returned');
+        for (let transID of transactionRecords.transactions) {
+            let transactionData = await conn.getTransaction(blockID, transID);
+            if (transactionData.validated) {
+                console.log('transaction ' + transactionData.transaction + ' created at ' + transactionData.timestamp + ' committed');
+            } else {
+                console.log('transaction ' + transactionData.transaction + ' created at ' + transactionData.timestamp + ' not commit');
+            }
+        }
+    }
+
+    console.log('chain interfaces tested');
 })
