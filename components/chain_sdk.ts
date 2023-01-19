@@ -109,6 +109,103 @@ export interface QueryCondition {
     descend: boolean,
 }
 
+export class QueryBuilder{
+    #_filters: ConditionFilter[];
+    #_since: string;
+    #_offset: number;
+    #_limit: number;
+    #_order: string;
+    #_descend: boolean;
+    constructor(){
+        this.#_filters = [];
+        this.#_since = '';
+        this.#_offset = 0;
+        this.#_limit = 0;
+        this.#_order = '';
+        this.#_descend = false;
+    }
+    PropertyEqual(propertyName: string, value: string): QueryBuilder{
+        this.#_filters.push({
+            property: propertyName,
+            operator: FilterOperator.Equal,
+            value: value
+        });
+        return this;
+    }
+    PropertyNotEqual(propertyName: string, value: string): QueryBuilder{
+        this.#_filters.push({
+            property: propertyName,
+            operator: FilterOperator.NotEqual,
+            value: value
+        });
+        return this;
+    }
+    PropertyGreaterThan(propertyName: string, value: string): QueryBuilder{
+        this.#_filters.push({
+            property: propertyName,
+            operator: FilterOperator.GreaterThan,
+            value: value
+        });
+        return this;
+    }
+    PropertyLessThan(propertyName: string, value: string): QueryBuilder{
+        this.#_filters.push({
+            property: propertyName,
+            operator: FilterOperator.LesserThan,
+            value: value
+        });
+        return this;
+    }
+    PropertyGreaterOrEqual(propertyName: string, value: string): QueryBuilder{
+        this.#_filters.push({
+            property: propertyName,
+            operator: FilterOperator.GreaterOrEqual,
+            value: value
+        });
+        return this;
+    }
+
+    PropertyLessOrEqual(propertyName: string, value: string): QueryBuilder{
+        this.#_filters.push({
+            property: propertyName,
+            operator: FilterOperator.LesserOrEqual,
+            value: value
+        });
+        return this;
+    }
+    StartFrom(value: string): QueryBuilder{
+        this.#_since = value;
+        return this;
+    }
+    SetOffset(offset: number): QueryBuilder{
+        this.#_offset = offset;
+        return this;
+    }
+    MaxRecord(limit:number): QueryBuilder{
+        this.#_limit = limit;
+        return this;
+    }
+    AscendBy(propertyName: string): QueryBuilder{
+        this.#_order = propertyName;
+        return this;
+    }
+    DescendBy(propertyName: string): QueryBuilder{
+        this.#_order = propertyName;
+        this.#_descend = true;
+        return this;
+    }
+    Build(): QueryCondition{
+        return {
+            filters: this.#_filters,
+            since: this.#_since,
+            offset: this.#_offset,
+            limit: this.#_limit,
+            order: this.#_order,
+            descend: this.#_descend,
+        }
+    }
+}
+
 export interface DocumentRecords {
     documents?: Document[],
     limit: number,

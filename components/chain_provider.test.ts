@@ -1,5 +1,5 @@
 import ChainProvider from "./chain_provider";
-import { DocumentProperty, PropertyType, ContractDefine, ContractStep } from './chain_sdk';
+import { DocumentProperty, PropertyType, ContractDefine, QueryCondition, QueryBuilder } from './chain_sdk';
 
 test('Test Schemas', async () => {
     var conn = await ChainProvider.connect();
@@ -128,7 +128,53 @@ test('Test Documents', async () => {
         console.log('property age of doc ' + docID + ' updated');
     }
 
+    //test query builder
+    let verifyQuery = async (caseName: string, condition: QueryCondition, totalCount: number,
+        expectResult: number[]) => {
+        let records = await conn.queryDocuments(schemaName, condition);
+        if (totalCount !== records.total) {
+            throw new Error('unexpect count ' + records.total + ' => ' + totalCount + ' in case ' + caseName);
+        }
+        let recordCount = records.documents.length;
+        if (expectResult.length !== recordCount) {
+            throw new Error('unexpect result count ' + recordCount + ' => ' + expectResult.length + ' in case ' + caseName);
+        }
 
+        console.log(recordCount + ' / ' + totalCount + ' documents returned');
+        for (let i = 0; i < recordCount; i++) {
+            let expectValue = expectResult[i];
+            let doc = records.documents[i];
+            let contentPayload = JSON.parse(doc.content);
+            if (expectValue !== contentPayload[propertyNameAge]) {
+                throw new Error('unexpect value ' + contentPayload[propertyNameAge] + ' => ' + expectValue + ' at doc ' + doc.id);
+            }
+            console.log(caseName + ': content of doc ' + doc.id + ' verified');
+        }
+        console.log(caseName + ' test ok');
+    }
+
+    {
+        //ascend query
+        const l = 5;
+        const o = 3;
+        let condition = new QueryBuilder().AscendBy(propertyNameAge).MaxRecord(l).SetOffset(o).Build();
+        let expected = [3, 4, 5, 6, 7];
+        await verifyQuery("ascend query", condition, docCount, expected);
+    }
+    {
+        //descend query with filter
+        const l = 3;
+        const total = 4;
+        let condition = new QueryBuilder().
+            DescendBy(propertyNameAge).
+            MaxRecord(l).
+            PropertyEqual("enabled", "true").
+            PropertyLessThan(propertyNameAge, "8").Build();
+
+        let expected = [7, 5, 3];
+        await verifyQuery("descend filter", condition, total, expected);
+
+    }
     for (let docID of docList) {
         await conn.removeDocument(schemaName, docID);
         console.log('doc ' + docID + ' removed');
@@ -265,7 +311,7 @@ test('Test Contracts', async () => {
 
 test('Test Chain', async () => {
     var conn = await ChainProvider.connect();
-    console.log('schema test begin...');
+    console.log('chain test begin...');
     let status = await conn.getStatus();
     console.log('world version ' + status.world_version + ', block height ' + status.block_height);
     console.log('genesis block: ' + status.genesis_block + ', previous block: ' + status.previous_block);
