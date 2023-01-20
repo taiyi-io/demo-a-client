@@ -1,14 +1,8 @@
 import Forms from './request_forms';
 import ChainProvider from '../../components/chain_provider';
-import { RequestRecord } from '../../components/record';
-import { TaiyiClient } from '../../components/chain_sdk';
-
-interface RecordList {
-  offset: number,
-  size: number,
-  total: number,
-  records: RequestRecord[]
-}
+import { QueryBuilder, TaiyiClient } from '../../components/chain_sdk';
+import { SchemaName, SchemaProperties, RequestRecord } from '../../components/verify_request';
+import { RecordList } from './request_forms';
 
 const pseudoData = {
   offset: 1,
@@ -78,22 +72,46 @@ const pseudoData = {
   ]
 }
 
-async function doTest(conn: TaiyiClient) {
-  const status = await conn.getStatus();
-  console.log('status: ' + JSON.stringify(status) + '\n');
-  const schemas = await conn.querySchemas(0, 10);
-  console.log('schemas: ' + JSON.stringify(schemas));
+async function ensureSchema(conn: TaiyiClient) {
+  let hasSchema = await conn.hasSchema(SchemaName);
+  if (!hasSchema) {
+    let defines = SchemaProperties();
+    await conn.createSchema(SchemaName, defines);
+    console.log('schema %s initialized', SchemaName);
+  }
 }
 
-async function getData(): Promise<RecordList> {
-  //todo: parse pagination parameters from query
-  var conn = await ChainProvider.connect();
-  await doTest(conn);
-  return pseudoData;
+async function queryRecords(conn: TaiyiClient, pageOffset: number, pageSize: number): Promise<RecordList> {
+  let condition = new QueryBuilder().
+    MaxRecord(pageSize).
+    SetOffset(pageOffset).
+    DescendBy('create_time').
+    Build();
+  let result = await conn.queryDocuments(SchemaName, condition);
+  let recordList: RecordList = {
+    records: [],
+    offset: result.offset,
+    size: result.limit,
+    total: result.total,
+  };
+  if (result.documents && 0 !== result.documents.length){
+    for (let doc of result.documents){
+      let record: RequestRecord = JSON.parse(doc.content);
+      record.id = doc.id;
+      recordList.records.push(record);
+    }
+  }
+  return recordList;
 }
 
-export default async function Page() {
-  const forms = await getData();
-  const { offset, size, total, records } = forms;
-  return <Forms offset={offset} size={size} total={total} records={records} />;
+export default async function Page({ searchParams }: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  let page = 0;
+  const pageSize = 10;
+  const offset = pageSize * page;
+  let conn = await ChainProvider.connect();
+  await ensureSchema(conn);
+  let records = await queryRecords(conn, offset, pageSize);
+  return <Forms requests={records} />;
 }

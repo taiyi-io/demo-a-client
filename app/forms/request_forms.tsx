@@ -2,6 +2,14 @@
 import Link from 'next/link';
 import Pagenation from '../../components/pagination';
 import { useAppContext, getCurrentyFormatter } from '../../components/context';
+import { RequestRecord } from '../../components/verify_request';
+
+export interface RecordList {
+  offset: number,
+  size: number,
+  total: number,
+  records: RequestRecord[],
+}
 
 const i18n = {
   en: {
@@ -27,6 +35,7 @@ const i18n = {
     statusApproving: 'Approving',
     statusComplete: 'Completed',
     title: 'Verification Requests',
+    noRecord: 'No request availalble',
   },
   cn: {
     id: '单据号',
@@ -51,6 +60,7 @@ const i18n = {
     statusApproving: '审批中',
     statusComplete: '已完成',
     title: '校验申请',
+    noRecord: '尚无申请',
   }
 }
 
@@ -58,8 +68,10 @@ const enumIdle = 0;
 const enumApproving = 1;
 const enumComplete = 2;
 
-export default function Forms(props) {
-  const { offset, size, total, records } = props;
+export default function Forms({ requests }: {
+  requests: RecordList
+}) {
+  const { offset, size, total, records } = requests;
   const { lang } = useAppContext();
   const texts = i18n[lang];
   var formatter = getCurrentyFormatter();
@@ -73,6 +85,76 @@ export default function Forms(props) {
     totalPages = total / recordPerPage;
   } else {
     totalPages = Math.ceil(total / recordPerPage);
+  }
+  let content;
+  if (records && 0 !== records.length) {
+    content = records.map(({ id, customer, amount, bank, verify_mode, result,
+      minimum_asset, status, create_time, invoke_time, verify_time }) => {
+      var operates = [{
+        href: '/forms/view/' + id,
+        icon: 'bi-search',
+        label: texts.btnDetail,
+      }];
+      let statusLabel, timeLabel, resultLabel, modeLabel;
+      if (enumIdle === status) {
+        statusLabel = texts.statusIlde;
+        timeLabel = create_time;
+        operates.push({
+          href: '/forms/manual/' + id,
+          icon: 'bi-person-fill',
+          label: texts.btnManual,
+        }, {
+          href: '/forms/auto/' + id,
+          icon: 'bi-robot',
+          label: texts.btnAuto,
+        }
+        );
+      } else if (enumApproving === status) {
+        statusLabel = texts.statusApproving;
+        timeLabel = invoke_time;
+        modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
+      } else {
+        statusLabel = texts.statusComplete;
+        timeLabel = verify_time;
+        resultLabel = result ? texts.approved : texts.rejected;
+        modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
+      }
+      return (
+        <tr key={id}>
+          <td>{id}</td>
+          <td className='text-center'>{customer}</td>
+          <td className='text-end'>{formatter.format(amount)}</td>
+          <td className='text-end'>{formatter.format(minimum_asset)}</td>
+          <td>{bank}</td>
+          <td>{statusLabel}</td>
+          <td>{modeLabel}</td>
+          <td>{resultLabel}</td>
+          <td>{timeLabel}</td>
+          <td>
+            <div className='d-flex'>
+              {
+                operates.map(({ href, icon, label }, index) => (
+                  <Link href={href} key={index}>
+                    <button type="button" className="btn btn-outline-primary btn-sm m-1">
+                      <i className={'bi ' + icon}></i>
+                      {label}
+                    </button>
+                  </Link>
+                ))
+              }
+            </div>
+          </td>
+        </tr>
+      );
+    });
+  } else {
+    content = (
+      <tr className='text-center'>
+        <td colSpan={10}>
+          {texts.noRecord}
+        </td>
+      </tr>
+    )
   }
 
   return (
@@ -110,67 +192,7 @@ export default function Forms(props) {
             </tr>
           </thead>
           <tbody>
-            {
-              records.map(({ id, customer, amount, bank, verify_mode, result,
-                minimum_asset, status, create_time, invoke_time, verify_time }) => {
-                var operates = [{
-                  href: '/forms/view/' + id,
-                  icon: 'bi-search',
-                  label: texts.btnDetail,
-                }];
-                let statusLabel, timeLabel, resultLabel, modeLabel;
-                if (enumIdle === status) {
-                  statusLabel = texts.statusIlde;
-                  timeLabel = create_time;
-                  operates.push({
-                    href: '/forms/manual/' + id,
-                    icon: 'bi-person-fill',
-                    label: texts.btnManual,
-                  }, {
-                    href: '/forms/auto/' + id,
-                    icon: 'bi-robot',
-                    label: texts.btnAuto,
-                  }
-                  );
-                } else if (enumApproving === status) {
-                  statusLabel = texts.statusApproving;
-                  timeLabel = invoke_time;
-                  modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
-                } else {
-                  statusLabel = texts.statusComplete;
-                  timeLabel = verify_time;
-                  resultLabel = result ? texts.approved : texts.rejected;
-                  modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
-                }
-                return (
-                  <tr key={id}>
-                    <td>{id}</td>
-                    <td className='text-center'>{customer}</td>
-                    <td className='text-end'>{formatter.format(amount)}</td>
-                    <td className='text-end'>{formatter.format(minimum_asset)}</td>
-                    <td>{bank}</td>
-                    <td>{statusLabel}</td>
-                    <td>{modeLabel}</td>
-                    <td>{resultLabel}</td>
-                    <td>{timeLabel}</td>
-                    <td>
-                      <div className='d-flex'>
-                        {
-                          operates.map(({ href, icon, label }, index) => (
-                            <Link href={href} key={index}>
-                              <button type="button" className="btn btn-outline-primary btn-sm m-1">
-                                <i className={'bi ' + icon}></i>
-                                {label}
-                              </button>
-                            </Link>
-                          ))
-                        }
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            }
+            {content}
           </tbody>
         </table>
         <Pagenation baseURL='/forms/' current={currentPage} total={totalPages} />

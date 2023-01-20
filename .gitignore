@@ -103,5 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
+# Visual studio
+.vscode
+
+# Private key file
 access_key.json
 

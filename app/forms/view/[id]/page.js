@@ -19,8 +19,6 @@ const pseudoData = {
 
 async function getData(id) {
   //todo: parse pagination parameters from query
-    var conn = await ChainProvider.connect();
-    const status = await conn.getStatus();
   return {
     id: id,
     ...pseudoData,

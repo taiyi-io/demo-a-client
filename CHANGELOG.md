@@ -1,5 +1,13 @@
 # Change Log for Demo A Client
 
+## [0.2.4] - 2023-01-20
+
+### Changed
+
+- Using real chain data in pages
+- Optimize pagination when no record avaiable
+- Optimize project configure using react and typescript
+
 ## [0.2.3] - 2023-01-12
 
 ### Added
