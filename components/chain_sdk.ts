@@ -73,6 +73,7 @@ export interface DocumentProperty {
     name: string,
     type: PropertyType,
     indexed?: boolean,
+    omissible?: boolean,
 }
 
 export interface DocumentSchema {

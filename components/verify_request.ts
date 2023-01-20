@@ -17,13 +17,13 @@ enum RequestParameter {
     VerifyTime = 'verify_time',
 };
 
-enum VerifyMode {
+export enum VerifyMode {
     Unknown = '',
     Manual = 'manual',
     Contract = 'contract',
 }
 
-enum RequestStatus {
+export enum RequestStatus {
     Idle = 0,
     Approving,
     Complete,
@@ -80,14 +80,17 @@ export function SchemaProperties(): DocumentProperty[] {
         {
             name: RequestParameter.Bank,
             type: PropertyType.String,
+            omissible: true,
         },
         {
             name: RequestParameter.Invoker,
             type: PropertyType.String,
+            omissible: true,
         },
         {
             name: RequestParameter.InvokeTime,
             type: PropertyType.String,
+            omissible: true,
         },
         {
             name: RequestParameter.Mode,
@@ -102,19 +105,22 @@ export function SchemaProperties(): DocumentProperty[] {
         {
             name: RequestParameter.Verifier,
             type: PropertyType.String,
+            omissible: true,
         },
         {
             name: RequestParameter.VerifyTime,
             type: PropertyType.String,
+            omissible: true,
         },
         {
             name: RequestParameter.Comment,
             type: PropertyType.String,
+            omissible: true,
         }
     ];
 };
 
-export function newVerifyRequest(customer: string, amount: number, asset: number, creator: string): VerifyRequest{
+export function newVerifyRequest(customer: string, amount: number, asset: number, creator: string): VerifyRequest {
     const now = new Date();
     const timestamp = now.toISOString();
     const input = {
@@ -129,7 +135,7 @@ export function newVerifyRequest(customer: string, amount: number, asset: number
     return new VerifyRequest(input);
 }
 
-export class VerifyRequest{
+export class VerifyRequest {
     id: string;
     customer: string;
     amount: number;
@@ -145,9 +151,9 @@ export class VerifyRequest{
     verifier: string;
     verify_time: string;
     comment: string;
-    constructor(input: RequestRecord){
-        const {customer, amount, minimum_asset, creator, create_time, status, bank, invoker, invoke_time, verify_mode,
-        result, verifier, verify_time, comment, id } = input;
+    constructor(input: RequestRecord) {
+        const { customer, amount, minimum_asset, creator, create_time, status, bank, invoker, invoke_time, verify_mode,
+            result, verifier, verify_time, comment, id } = input;
         this.customer = customer;
         this.amount = amount;
         this.minimum_asset = minimum_asset;
@@ -156,26 +162,26 @@ export class VerifyRequest{
         this.verify_mode = verify_mode;
         this.status = status;
         this.result = result;
-        if (id){
+        if (id) {
             this.id = id;
         }
-        if (bank){
+        if (bank) {
             this.bank = bank;
         }
-        if (invoker){
+        if (invoker) {
             this.invoker = invoker;
         }
-        if (invoke_time){
+        if (invoke_time) {
             this.invoke_time = invoke_time;
         }
-        if (verifier){
+        if (verifier) {
             this.verifier = verifier;
         }
-        if (verify_time){
+        if (verify_time) {
             this.verify_time = verify_time;
         }
-        if (comment){
+        if (comment) {
             this.comment = comment;
-        }     
+        }
     }
 }

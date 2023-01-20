@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Pagenation from '../../components/pagination';
 import { useAppContext, getCurrentyFormatter } from '../../components/context';
-import { RequestRecord } from '../../components/verify_request';
+import { RequestRecord, RequestStatus } from '../../components/verify_request';
 
 export interface RecordList {
   offset: number,
@@ -64,10 +64,6 @@ const i18n = {
   }
 }
 
-const enumIdle = 0;
-const enumApproving = 1;
-const enumComplete = 2;
-
 export default function Forms({ requests }: {
   requests: RecordList
 }) {
@@ -96,7 +92,7 @@ export default function Forms({ requests }: {
         label: texts.btnDetail,
       }];
       let statusLabel, timeLabel, resultLabel, modeLabel;
-      if (enumIdle === status) {
+      if (RequestStatus.Idle === status) {
         statusLabel = texts.statusIlde;
         timeLabel = create_time;
         operates.push({
@@ -109,7 +105,7 @@ export default function Forms({ requests }: {
           label: texts.btnAuto,
         }
         );
-      } else if (enumApproving === status) {
+      } else if (RequestStatus.Approving === status) {
         statusLabel = texts.statusApproving;
         timeLabel = invoke_time;
         modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
