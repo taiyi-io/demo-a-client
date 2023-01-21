@@ -71,7 +71,7 @@ export default function FormDetail(props) {
         statusLabel = texts.statusComplete;
         resultLabel = result ? texts.approved : texts.rejected;
     }
-    var parameters = [
+    let parameters = [
         {
             label: texts.id,
             value: id,

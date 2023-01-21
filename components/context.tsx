@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 const langChinese = 'cn';
 const langEnglish = 'en';
@@ -12,11 +12,17 @@ const defaultContext = {
 
 const AppContext = createContext(defaultContext);
 
-export function useAppContext(){
+export interface ContextData {
+    lang: string,
+    user: string,
+    version: string,
+}
+
+export function useAppContext(): ContextData{
     return useContext(AppContext);
 }
 
-export function getCurrentyFormatter(){
+export function getCurrentyFormatter(): Intl.NumberFormat{
     const { lang } = useAppContext();
     let formatter;
     if (langEnglish === lang){
@@ -33,7 +39,7 @@ export function getCurrentyFormatter(){
     return formatter;
 }
 
-export function ContextProvider({value, children}){    
+export function ContextProvider({value, children}): React.ReactNode{    
     return (
         <AppContext.Provider value={value}>
             {children}

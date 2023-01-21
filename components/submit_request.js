@@ -43,7 +43,7 @@ export default function SubmitRequest(props) {
     const { data, bankList, mode } = props;
     const { id, customer, amount, minimum_asset, create_time } = data;
     const isManual = 'manual' === mode;
-    var parameters = [
+    let parameters = [
         {
             label: texts.id,
             value: id,

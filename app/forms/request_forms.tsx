@@ -70,9 +70,9 @@ export default function Forms({ requests }: {
   const { offset, size, total, records } = requests;
   const { lang } = useAppContext();
   const texts = i18n[lang];
-  var formatter = getCurrentyFormatter();
+  let formatter = getCurrentyFormatter();
   const recordPerPage = size;
-  var currentPage = 0;
+  let currentPage = 0;
   if (offset >= recordPerPage) {
     currentPage = Math.floor(offset / recordPerPage);
   }
@@ -86,7 +86,7 @@ export default function Forms({ requests }: {
   if (records && 0 !== records.length) {
     content = records.map(({ id, customer, amount, bank, verify_mode, result,
       minimum_asset, status, create_time, invoke_time, verify_time }) => {
-      var operates = [{
+      let operates = [{
         href: '/forms/view/' + id,
         icon: 'bi-search',
         label: texts.btnDetail,

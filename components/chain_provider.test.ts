@@ -2,7 +2,7 @@ import ChainProvider from "./chain_provider";
 import { DocumentProperty, PropertyType, ContractDefine, QueryCondition, QueryBuilder } from './chain_sdk';
 
 test('Test Schemas', async () => {
-    var conn = await ChainProvider.connect();
+    let conn = await ChainProvider.connect();
     const schemaName = 'js-test-case1-schema';
     console.log('schema test begin...');
     {
@@ -71,7 +71,7 @@ test('Test Documents', async () => {
     const propertyNameEnabled = 'enabled';
     const schemaName = 'js-test-case2-document';
     const docPrefix = 'js-test-case2-';
-    var conn = await ChainProvider.connect();
+    let conn = await ChainProvider.connect();
     console.log('document test begin...');
     {
         let result = await conn.hasSchema(schemaName);
@@ -82,11 +82,11 @@ test('Test Documents', async () => {
         }
     }
 
-    var properties: DocumentProperty[] = [];
+    let properties: DocumentProperty[] = [];
     await conn.createSchema(schemaName, properties);
 
-    var docList: string[] = [];
-    var content = '{}';
+    let docList: string[] = [];
+    let content = '{}';
     for (let i = 0; i < docCount; i++) {
         let docID = docPrefix + (i + 1);
         let respID = await conn.addDocument(schemaName, docID, content);
@@ -218,7 +218,7 @@ test('Test Contracts', async () => {
             indexed: true,
         },
     ];
-    var conn = await ChainProvider.connect();
+    let conn = await ChainProvider.connect();
     console.log('contract test begin...');
     {
         let result = await conn.hasSchema(schemaName);
@@ -229,8 +229,8 @@ test('Test Contracts', async () => {
         }
     }
     await conn.createSchema(schemaName, properties);
-    var varName = "$s"
-    var createContract: ContractDefine = {
+    let varName = "$s"
+    let createContract: ContractDefine = {
         steps: [
             {
                 action: "create_doc",
@@ -266,7 +266,7 @@ test('Test Contracts', async () => {
         ],
     };
 
-    var deleteContract: ContractDefine = {
+    let deleteContract: ContractDefine = {
         steps: [
             {
                 action: "delete_doc",
@@ -283,7 +283,7 @@ test('Test Contracts', async () => {
     const deleteContractName = 'contract_delete';
     await conn.deployContract(deleteContractName, deleteContract);
     const docID = 'contract-doc';
-    var parameters: string[] = [
+    let parameters: string[] = [
         schemaName,
         docID,
         schemaName,
@@ -295,7 +295,7 @@ test('Test Contracts', async () => {
     await conn.enableContractTrace(createContractName);
     await conn.callContract(createContractName, parameters);
     await conn.callContract(deleteContractName, [schemaName, docID]);
-    var { total } = await conn.queryContracts(0, 10);
+    let { total } = await conn.queryContracts(0, 10);
     console.log(total + ' contracts returned before withdraw');
     await conn.disableContractTrace(createContractName);
     await conn.withdrawContract(createContractName);
@@ -310,7 +310,7 @@ test('Test Contracts', async () => {
 })
 
 test('Test Chain', async () => {
-    var conn = await ChainProvider.connect();
+    let conn = await ChainProvider.connect();
     console.log('chain test begin...');
     let status = await conn.getStatus();
     console.log('world version ' + status.world_version + ', block height ' + status.block_height);

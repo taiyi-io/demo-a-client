@@ -1,5 +1,5 @@
 
-import NewPanel from "./new_panel";
+import NewPanel from "./panel";
 
 const pseudoData = [
     'wang_xiaoer',
@@ -13,7 +13,7 @@ async function queryUsers() {
 }
 
 
-export default async function Page(props) {
+export default async function Page() {
     const userList = await queryUsers();
     return (
         <NewPanel users={userList} />

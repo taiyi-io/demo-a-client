@@ -1,7 +1,7 @@
 'use client';
 import { useAppContext } from '../../../components/context';
 import Link from 'next/link';
-import CreateForm from './request';
+import CreateForm from './form';
 
 const i18n = {
     en: {
@@ -14,7 +14,9 @@ const i18n = {
     }
 }
 
-export default function NewPanel({ users }) {
+export default function NewPanel({ users }: {
+    users: string[],
+}) {
     const { lang } = useAppContext();
     const texts = i18n[lang];
     return (
