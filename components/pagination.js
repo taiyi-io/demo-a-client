@@ -3,7 +3,7 @@ export default function Pagination(props){
     const isFirst = 0 === current;
     const isLast = (total - 1) === current;
     let items = [];
-    if (0 !== total){
+    if (total > 1){
         items.push((
             <li className={isFirst? 'page-item disabled': 'page-item'} key='first'>
                 <a className="page-link" href={baseURL + '?page=0'} aria-label="Previous">

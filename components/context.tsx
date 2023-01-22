@@ -39,7 +39,12 @@ export function getCurrentyFormatter(): Intl.NumberFormat{
     return formatter;
 }
 
-export function ContextProvider({value, children}): React.ReactNode{    
+type providerProps = {
+    value: ContextData,
+    children: React.ReactNode,
+}
+
+export function ContextProvider({value, children}: providerProps): JSX.Element{    
     return (
         <AppContext.Provider value={value}>
             {children}

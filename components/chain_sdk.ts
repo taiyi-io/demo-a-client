@@ -299,24 +299,24 @@ interface sessionResponse {
     address: string,
 }
 
-export function NewClientFromAccess(key: AccessKey) {
+export function NewConnectorFromAccess(key: AccessKey) {
     const { id, encode_method, private_key } = key.private_data;
     if (defaultKeyEncodeMethod === encode_method) {
         if (!isHex(private_key)) {
             throw new Error('invalid key format');
         }
         let decoded = hexToBin(private_key).slice(0, 32);
-        return NewClient(id, decoded);
+        return NewConnector(id, decoded);
     } else {
         throw new Error('unsupport encode method: ' + encode_method);
     }
 }
 
-export function NewClient(accessID: string, privateKey: Uint8Array) {
-    return new TaiyiClient(accessID, privateKey);
+export function NewConnector(accessID: string, privateKey: Uint8Array) {
+    return new ChainConnector(accessID, privateKey);
 }
 
-export class TaiyiClient {
+export class ChainConnector {
     #_accessID: string = '';
     #_privateKey: Uint8Array;
     #_apiBase: string = '';

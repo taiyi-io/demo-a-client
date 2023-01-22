@@ -47,6 +47,13 @@ export interface RequestRecord {
     comment?: string,
 };
 
+export interface RecordList {
+    offset: number,
+    size: number,
+    total: number,
+    records: RequestRecord[],
+  }
+
 export const SchemaName = 'verify_request';
 
 export function SchemaProperties(): DocumentProperty[] {
@@ -136,21 +143,21 @@ export function newVerifyRequest(customer: string, amount: number, asset: number
 }
 
 export class VerifyRequest {
-    id: string;
-    customer: string;
+    id: string = '';
+    customer: string = '';
     amount: number;
     minimum_asset: number;
     creator: string;
     create_time: string;
     status: RequestStatus;
-    bank: string;
-    invoker: string;
-    invoke_time: string;
+    bank: string = '';
+    invoker: string = '';
+    invoke_time: string = '';
     verify_mode: VerifyMode;
-    result: boolean;
-    verifier: string;
-    verify_time: string;
-    comment: string;
+    result: boolean = false;
+    verifier: string = '';
+    verify_time: string = '';
+    comment: string = '';
     constructor(input: RequestRecord) {
         const { customer, amount, minimum_asset, creator, create_time, status, bank, invoker, invoke_time, verify_mode,
             result, verifier, verify_time, comment, id } = input;
@@ -161,7 +168,11 @@ export class VerifyRequest {
         this.create_time = create_time;
         this.verify_mode = verify_mode;
         this.status = status;
-        this.result = result;
+        if (!result){
+            this.result = false;
+        }else{
+            this.result = true;
+        }
         if (id) {
             this.id = id;
         }

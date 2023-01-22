@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         asset: number, 
         creator: string
     }
-    let payload = req.body as requestPayload;
+    let payload: requestPayload = JSON.parse(req.body);
     const { customer, amount, asset, creator } = payload;
     let docID = await createRequest(customer, amount, asset, creator);
     interface dataPayload{

@@ -1,6 +1,6 @@
 import Forms from './request_forms';
 import ChainProvider from '../../components/chain_provider';
-import { QueryBuilder, TaiyiClient } from '../../components/chain_sdk';
+import { QueryBuilder, ChainConnector } from '../../components/chain_sdk';
 import { SchemaName, SchemaProperties, RequestRecord } from '../../components/verify_request';
 import { RecordList } from './request_forms';
 
@@ -72,16 +72,7 @@ const pseudoData = {
   ]
 }
 
-async function ensureSchema(conn: TaiyiClient) {
-  let hasSchema = await conn.hasSchema(SchemaName);
-  if (!hasSchema) {
-    let defines = SchemaProperties();
-    await conn.createSchema(SchemaName, defines);
-    console.log('schema %s initialized', SchemaName);
-  }
-}
-
-async function queryRecords(conn: TaiyiClient, pageOffset: number, pageSize: number): Promise<RecordList> {
+async function queryRecords(conn: ChainConnector, pageOffset: number, pageSize: number): Promise<RecordList> {
   let condition = new QueryBuilder().
     MaxRecord(pageSize).
     SetOffset(pageOffset).
@@ -111,7 +102,6 @@ export default async function Page({ searchParams }: {
   const pageSize = 10;
   const offset = pageSize * page;
   let conn = await ChainProvider.connect();
-  await ensureSchema(conn);
   let records = await queryRecords(conn, offset, pageSize);
   return <Forms requests={records} />;
 }

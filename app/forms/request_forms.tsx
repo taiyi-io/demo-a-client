@@ -2,14 +2,7 @@
 import Link from 'next/link';
 import Pagenation from '../../components/pagination';
 import { useAppContext, getCurrentyFormatter } from '../../components/context';
-import { RequestRecord, RequestStatus } from '../../components/verify_request';
-
-export interface RecordList {
-  offset: number,
-  size: number,
-  total: number,
-  records: RequestRecord[],
-}
+import { RecordList, RequestStatus } from '../../components/verify_request';
 
 const i18n = {
   en: {
@@ -91,10 +84,10 @@ export default function Forms({ requests }: {
         icon: 'bi-search',
         label: texts.btnDetail,
       }];
-      let statusLabel, timeLabel, resultLabel, modeLabel;
+      let statusLabel: string, timeLabel: string, resultLabel: string, modeLabel: string;
       if (RequestStatus.Idle === status) {
         statusLabel = texts.statusIlde;
-        timeLabel = create_time;
+        timeLabel = new Date(create_time).toLocaleString();
         operates.push({
           href: '/forms/manual/' + id,
           icon: 'bi-person-fill',
@@ -107,11 +100,11 @@ export default function Forms({ requests }: {
         );
       } else if (RequestStatus.Approving === status) {
         statusLabel = texts.statusApproving;
-        timeLabel = invoke_time;
+        timeLabel = new Date(invoke_time).toLocaleString();
         modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
       } else {
         statusLabel = texts.statusComplete;
-        timeLabel = verify_time;
+        timeLabel = new Date(verify_time).toLocaleString();
         resultLabel = result ? texts.approved : texts.rejected;
         modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
       }
