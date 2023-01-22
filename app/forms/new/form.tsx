@@ -134,12 +134,12 @@ export default function CreateForm({ users }: {
         };
         setStatus(formStatus.committing);
         let resp = await fetch(url, options);
-        if (!resp.ok){
+        if (!resp.ok) {
             showError(resp.statusText);
             return;
         }
         let result = (await resp.json() as ResponsePayload);
-        if (0 !== result.error_code){
+        if (0 !== result.error_code) {
             showError(result.message);
             return;
         }
@@ -148,13 +148,18 @@ export default function CreateForm({ users }: {
     };
 
     React.useEffect(() => {
-        if (formStatus.success === status){
-            if (countDown > 0){
-                setTimeout(() => {
-                    setCountDown(countDown - 1);
-                }, 1000);
-            }else{
-                router.push(listURL);
+        if (formStatus.success === status) {
+            if (countDown > 0) {
+                let next = countDown - 1;
+                if (next > 0) {
+                    setTimeout(() => {
+                        setCountDown(next);
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        router.push(listURL);
+                    }, 1000);
+                }
             }
         }
     }, [status, countDown]);
@@ -162,7 +167,7 @@ export default function CreateForm({ users }: {
     if (formStatus.success === status) {
         //
         let title: string = strings(texts.formatSuccess).replace('{0}', id).get();
-        let countDownLabel = strings(texts.countDown).replace('{0}', countDown.toString()).get();        
+        let countDownLabel = strings(texts.countDown).replace('{0}', countDown.toString()).get();
         return (
             <div className='text-center p-3 m-5'>
                 <h5>

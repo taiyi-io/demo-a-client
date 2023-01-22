@@ -96,8 +96,8 @@ export default function SubmitForm({ record, bankList, mode }: {
     const isManual = VerifyMode.Manual === data.mode;
 
     const showError = React.useCallback((msg: string) => {
-        setStatus(formStatus.idle);
         setError(msg);
+        setStatus(formStatus.idle);
     }, []);
 
     const handleBankChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -147,13 +147,18 @@ export default function SubmitForm({ record, bankList, mode }: {
     };
 
     React.useEffect(() => {
-        if (formStatus.success === status) {
-            if (countDown > 0) {
-                setTimeout(() => {
-                    setCountDown(countDown - 1);
-                }, 1000);
-            } else {
-                router.push(listURL);
+        if (formStatus.success === status){
+            if (countDown > 0){                
+                let next = countDown - 1;
+                if (next > 0){
+                    setTimeout(() => {                    
+                        setCountDown(next);
+                    }, 1000);
+                }else{
+                    setTimeout(() => {                    
+                        router.push(listURL);
+                    }, 1000);
+                }
             }
         }
     }, [status, countDown]);

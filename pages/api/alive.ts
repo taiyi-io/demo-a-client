@@ -12,6 +12,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 async function handleKeepAlive(req: NextApiRequest, res: NextApiResponse){
     let conn = await ChainProvider.connect();
     await conn.activate();
-    console.log("<API> keep session alive");
+    // console.log("<API> keep session alive");
     res.status(200).end();
 }
