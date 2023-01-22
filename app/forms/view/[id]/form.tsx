@@ -1,5 +1,6 @@
 'use client';
-import { useAppContext } from '../../../../components/context';
+import { getCurrentyFormatter, useAppContext } from '../../../../components/context';
+import { RequestRecord } from '../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -56,13 +57,15 @@ const i18n = {
 const enumIdle = 0;
 const enumApproving = 1;
 
-export default function FormDetail(props) {
+export default function FormDetail({ record }: {
+    record: RequestRecord,
+}) {
     const { lang } = useAppContext();
     const texts = i18n[lang];
-    const { data } = props;
+    let formatter = getCurrentyFormatter();
     const { id, customer, amount, bank, verify_mode, result, invoker, verifier,
-        minimum_asset, status, create_time, invoke_time, verify_time } = data;
-    let statusLabel, resultLabel;
+        minimum_asset, status, create_time, invoke_time, verify_time } = record;
+    let statusLabel: string, resultLabel: string;
     if (enumIdle === status) {
         statusLabel = texts.statusIlde;
     } else if (enumApproving === status) {
@@ -82,11 +85,11 @@ export default function FormDetail(props) {
         },
         {
             label: texts.amount,
-            value: amount,
+            value: formatter.format(amount),
         },
         {
             label: texts.asset,
-            value: minimum_asset,
+            value: formatter.format(minimum_asset),
         },
         {
             label: texts.bank,
@@ -110,11 +113,11 @@ export default function FormDetail(props) {
         },
         {
             label: texts.createTime,
-            value: create_time,
+            value: create_time? new Date(create_time).toLocaleString(): '',
         },
         {
             label: texts.invokeTime,
-            value: invoke_time,
+            value: invoke_time? new Date(invoke_time).toLocaleString(): '',
         },
         {
             label: texts.verifier,
@@ -122,7 +125,7 @@ export default function FormDetail(props) {
         },
         {
             label: texts.completeTime,
-            value: verify_time,
+            value: verify_time? new Date(verify_time).toLocaleString(): '',
         },
     ]
     return (

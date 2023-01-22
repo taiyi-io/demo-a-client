@@ -1,7 +1,7 @@
 import ChainProvider from '../components/chain_provider';
 import { ChainConnector } from '../components/chain_sdk';
 import { ContextData, ContextProvider } from '../components/context';
-import { SchemaName, SchemaProperties } from '../components/verify_request';
+import { REQUEST_SCHEMA_NAME, SchemaProperties } from '../components/verify_request';
 import Boot from './bootstrap';
 
 let npmPackage = require("../package.json");
@@ -9,18 +9,18 @@ let npmPackage = require("../package.json");
 const version = npmPackage.version;
 
 async function ensureSchema(conn: ChainConnector) {
-  let hasSchema = await conn.hasSchema(SchemaName);
+  let hasSchema = await conn.hasSchema(REQUEST_SCHEMA_NAME);
   if (!hasSchema) {
     let defines = SchemaProperties();
-    await conn.createSchema(SchemaName, defines);
-    console.log('schema %s initialized', SchemaName);
+    await conn.createSchema(REQUEST_SCHEMA_NAME, defines);
+    console.log('schema %s initialized', REQUEST_SCHEMA_NAME);
   }
 }
 
 export default async function RootLayout({ children }) {
   const defaultContext: ContextData = {
     lang: 'cn',
-    user: 'demo',
+    user: 'demo.corp_a',
     version: version,
   }
   

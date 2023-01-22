@@ -199,7 +199,7 @@ export default function CreateForm({ users }: {
                                 value={data.customer}
                                 onChange={handleCustomerChanged}
                             >
-                                <option selected value=''>{texts.customerHelper}</option>
+                                <option value=''>{texts.customerHelper}</option>
                                 {
                                     users.map((id, index) => <option key={index} value={id}>{id}</option>)
                                 }

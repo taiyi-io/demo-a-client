@@ -1,0 +1,1 @@
+export const VERIFY_CONTRACT_NAME = 'verify_asset';

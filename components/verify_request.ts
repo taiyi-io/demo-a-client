@@ -54,7 +54,7 @@ export interface RecordList {
     records: RequestRecord[],
   }
 
-export const SchemaName = 'verify_request';
+export const REQUEST_SCHEMA_NAME = 'verify_request';
 
 export function SchemaProperties(): DocumentProperty[] {
     return [

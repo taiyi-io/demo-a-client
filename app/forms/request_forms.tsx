@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Pagenation from '../../components/pagination';
 import { useAppContext, getCurrentyFormatter } from '../../components/context';
 import { RecordList, RequestStatus } from '../../components/verify_request';
+import React from 'react';
 
 const i18n = {
   en: {
@@ -57,12 +58,29 @@ const i18n = {
   }
 }
 
+export async function keepAlive() {
+  const url = '/api/alive/';
+  const options = {
+    method: 'PUT',
+  };
+  await fetch(url, options);
+}
+
 export default function Forms({ requests }: {
   requests: RecordList
 }) {
   const { offset, size, total, records } = requests;
   const { lang } = useAppContext();
   const texts = i18n[lang];
+  const aliveInterval = 1000 * 10;
+  React.useEffect(() =>{
+    let intervalID = setInterval(async () => {
+      await keepAlive();
+    }, aliveInterval);
+    return () =>{
+      clearInterval(intervalID);
+    };
+  }, []);
   let formatter = getCurrentyFormatter();
   const recordPerPage = size;
   let currentPage = 0;

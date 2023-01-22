@@ -1,7 +1,8 @@
 'use client';
 import { useAppContext } from '../../../../components/context';
-import SubmitRequest from '../../../../components/submit_request';
 import Link from 'next/link';
+import SubmitForm, { formMode } from '../../../../components/submit_form';
+import { RequestRecord } from '../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -14,7 +15,10 @@ const i18n = {
     }
 }
 
-export default function ManualPanel({ data, bankList, mode }) {
+export default function ManualPanel({ record, bankList }: {
+    record: RequestRecord,
+    bankList: string[],
+}) {
     const { lang } = useAppContext();
     const texts = i18n[lang];
     return (
@@ -31,7 +35,7 @@ export default function ManualPanel({ data, bankList, mode }) {
                 <div className='col-3'>
                 </div>
                 <div className='col-6'>
-                    <SubmitRequest data={data} bankList={bankList} mode='manual' />
+                    <SubmitForm record={record} bankList={bankList} mode={formMode.Manual} />
                 </div>
             </div>
         </div>

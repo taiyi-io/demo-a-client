@@ -1,7 +1,7 @@
 import Forms from './request_forms';
 import ChainProvider from '../../components/chain_provider';
 import { QueryBuilder, ChainConnector } from '../../components/chain_sdk';
-import { SchemaName, SchemaProperties, RequestRecord } from '../../components/verify_request';
+import { REQUEST_SCHEMA_NAME, SchemaProperties, RequestRecord } from '../../components/verify_request';
 import { RecordList } from '../../components/verify_request';
 
 async function queryRecords(pageOffset: number, pageSize: number): Promise<RecordList> {
@@ -11,7 +11,7 @@ async function queryRecords(pageOffset: number, pageSize: number): Promise<Recor
     SetOffset(pageOffset).
     DescendBy('create_time').
     Build();
-  let result = await conn.queryDocuments(SchemaName, condition);
+  let result = await conn.queryDocuments(REQUEST_SCHEMA_NAME, condition);
   let recordList: RecordList = {
     records: [],
     offset: result.offset,

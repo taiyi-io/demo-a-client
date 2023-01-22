@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import ChainProvider from '../../components/chain_provider';
-import { newVerifyRequest, SchemaName } from '../../components/verify_request';
+import { newVerifyRequest, REQUEST_SCHEMA_NAME } from '../../components/verify_request';
 import { ResponsePayload } from './response';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -38,6 +38,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   async function createRequest(customer: string, amount: number, asset: number, creator: string): Promise<string> {
     let conn = await ChainProvider.connect();
     let payload = newVerifyRequest(customer, amount, asset, creator);
-    const schemaName = SchemaName;
+    const schemaName = REQUEST_SCHEMA_NAME;
     return conn.addDocument(schemaName, '', JSON.stringify(payload));
   }

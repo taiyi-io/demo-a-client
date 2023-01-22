@@ -1,8 +1,9 @@
 'use client';
 import { useAppContext } from '../../../../components/context';
 import BackButton from '../../../../components/back_button';
-import FormDetail from './detail';
+import FormDetail from './form';
 import Link from 'next/link';
+import { RequestRecord } from '../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -15,7 +16,9 @@ const i18n = {
     }
 }
 
-export default function DetailPanel({ data }) {
+export default function DetailPanel({record}:{
+    record: RequestRecord,
+}) {
     const { lang } = useAppContext();
     const texts = i18n[lang];
     return (
@@ -32,7 +35,7 @@ export default function DetailPanel({ data }) {
                 <div className='col-3'>
                 </div>
                 <div className='col-6'>
-                    <FormDetail data={data} />
+                    <FormDetail record={record} />
                 </div>
             </div>
             <div className='row justify-content-center'>
