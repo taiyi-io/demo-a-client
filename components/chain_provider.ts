@@ -2,7 +2,7 @@ import { NewConnectorFromAccess, ChainConnector } from "./chain_sdk";
 import path from 'path';
 import { promises as fs } from 'fs';
 
-const npmPackage = require('../package.json');
+import npmPackage from '../package.json';
 
 export default class ChainProvider{
     static conn: ChainConnector = null;
