@@ -1,20 +1,9 @@
 
+import { queryCustomers } from "../../../components/chain_utils";
 import NewPanel from "./panel";
 
-const pseudoData = [
-    'wang_xiaoer',
-    'zhangsan',
-    'lisi',
-    'laoliu',
-];
-
-async function queryUsers() {
-    return pseudoData;
-}
-
-
 export default async function Page() {
-    const userList = await queryUsers();
+    const userList = await queryCustomers();
     return (
         <NewPanel users={userList} />
     )

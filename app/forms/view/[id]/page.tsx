@@ -1,13 +1,11 @@
 import DetailPanel from './panel';
-import ChainProvider from '../../../../components/chain_provider';
-import { RequestRecord, REQUEST_SCHEMA_NAME } from '../../../../components/verify_request';
+import { getRecord, loadAllRecords } from '../../../../components/chain_utils';
 
-export async function getRecord(recordID: string): Promise<RequestRecord>{
-  let conn = await ChainProvider.connect();
-  let content = await conn.getDocument(REQUEST_SCHEMA_NAME, recordID);
-  let record: RequestRecord = JSON.parse(content);
-  record.id = recordID;
-  return record;
+export async function generateStaticParams(){
+  const records = await loadAllRecords();
+  return records.map(record => ({
+    id: record.id,
+  }));
 }
 
 export default async function Page({ params }){

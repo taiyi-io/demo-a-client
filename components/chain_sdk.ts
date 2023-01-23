@@ -961,9 +961,9 @@ export class ChainConnector {
         headers[headerNameSignatureAlgorithm] = signatureMethodEd25519;
         headers[headerNameSignature] = signature;
         options.headers = headers;
-        // process.stdout.write('session: ' + this.#_sessionID + '\n');
-        // process.stdout.write('signature: ' + signature + '\n');
-        // process.stdout.write('content: ' + JSON.stringify(signatureContent) + '\n');
+        process.stdout.write('session: ' + this.#_sessionID + '\n');
+        process.stdout.write('signature: ' + signature + '\n');
+        process.stdout.write('content: ' + JSON.stringify(signatureContent) + '\n');
         return options;
     }
 
