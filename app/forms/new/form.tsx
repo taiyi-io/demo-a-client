@@ -6,6 +6,7 @@ import Link from 'next/link';
 import strings from '@supercharge/strings/dist';
 import { useRouter } from 'next/navigation';
 import { ResponsePayload } from '../../../pages/api/response';
+import { createRequest } from '../../../components/api_utils';
 
 const i18n = {
     en: {
@@ -123,28 +124,17 @@ export default function CreateForm({ users }: {
             showError(texts.invalidAsset);
             return;
         }
-        const payload = {
-            ...data,
-            creator: user,
-        };
-        const url = '/api/requests/';
-        const options: RequestInit = {
-            method: 'POST',
-            body: JSON.stringify(payload),
-        };
         setStatus(formStatus.committing);
-        let resp = await fetch(url, options);
-        if (!resp.ok) {
-            showError(resp.statusText);
-            return;
+        try {
+            const {customer, amount, asset } = data;
+            let requestID:string = await createRequest(user, customer, amount, asset);
+            setCountDown(DEFAULT_COUNT_DOWN);
+            setID(requestID);
+            setStatus(formStatus.success);
+        } catch (e) {
+            showError(e.message);
+            return
         }
-        let result = (await resp.json() as ResponsePayload);
-        if (0 !== result.error_code) {
-            showError(result.message);
-            return;
-        }
-        setID(result.data.id);
-        setStatus(formStatus.success);
     };
 
     React.useEffect(() => {

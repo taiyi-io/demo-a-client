@@ -7,6 +7,7 @@ import React from 'react';
 import { ResponsePayload } from '../pages/api/response';
 import Link from 'next/link';
 import strings from '@supercharge/strings/dist';
+import { submitRequest } from './api_utils';
 
 const i18n = {
     en: {
@@ -122,28 +123,15 @@ export default function SubmitForm({ record, bankList, mode }: {
             showError(texts.invalidBank);
             return;
         }
-        const payload = {
-            ...data,
-            invoker: user,
-        };
-        const url = '/api/requests/' + id;
-        const options: RequestInit = {
-            method: 'PUT',
-            body: JSON.stringify(payload),
-        };
         setStatus(formStatus.committing);
-        let resp = await fetch(url, options);
-        if (!resp.ok) {
-            showError(resp.statusText);
-            return;
+        try {
+            await submitRequest(id, user, data.bank, data.mode);
+            setCountDown(DEFAULT_COUNT_DOWN);
+            setStatus(formStatus.success);
+        } catch (e) {
+            showError(e.message);
+            return
         }
-        let result = (await resp.json() as ResponsePayload);
-        if (0 !== result.error_code) {
-            showError(result.message);
-            return;
-        }
-        setStatus(formStatus.success);
-        setCountDown(DEFAULT_COUNT_DOWN);
     };
 
     React.useEffect(() => {

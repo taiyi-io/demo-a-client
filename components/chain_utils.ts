@@ -1,5 +1,6 @@
 import ChainProvider from "./chain_provider";
 import { QueryBuilder } from "./chain_sdk";
+import { ASSET_SCHEMA_NAME } from "./verify_asset";
 import { RequestRecord, REQUEST_SCHEMA_NAME } from "./verify_request";
 
 export async function getRecord(recordID: string): Promise<RequestRecord> {
@@ -17,12 +18,29 @@ export async function queryBanks():  Promise<string[]> {
 }
 
 export async function queryCustomers():  Promise<string[]> {
-  return [
-    'wang_xiaoer',
-    'zhangsan',
-    'lisi',
-    'laoliu',
-  ];
+  const pageSize = 20;
+  const schemaName = ASSET_SCHEMA_NAME;
+  let offset = 0;
+  let result: string[] = [];
+  let exitFlag = false;
+  let conn = await ChainProvider.connect();
+  do {
+    let condition = new QueryBuilder().
+      MaxRecord(pageSize).
+      SetOffset(offset).
+      Build();
+    let records = await conn.queryDocuments(schemaName, condition);
+    if (records.documents && 0 !== records.documents.length) {
+      for (let doc of records.documents) {
+        offset++;
+        result.push(doc.id);
+      }
+    }
+    if (offset >= records.total) {
+      exitFlag = true;
+    }
+  } while (!exitFlag);
+  return result;
 }
 
 export async function loadAllRecords(): Promise<RequestRecord[]>{  

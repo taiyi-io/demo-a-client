@@ -2,18 +2,17 @@
 import Link from 'next/link';
 import Pagenation from '../../components/pagination';
 import { useAppContext, getCurrentyFormatter } from '../../components/context';
-import { RecordList, RequestStatus } from '../../components/verify_request';
+import { RecordList, RequestStatus, VerifyMode } from '../../components/verify_request';
 import React from 'react';
+import { keepAlive } from '../../components/api_utils';
+import strings from '@supercharge/strings/dist';
 
 const i18n = {
   en: {
     id: 'ID',
     customer: 'Customer',
-    bank: 'Bank',
     amount: 'Amount',
     asset: 'Minimal Asset',
-    mode: 'Verify Mode',
-    result: 'Verify Result',
     status: 'Status',
     operate: 'Operates',
     btnNew: 'New Request',
@@ -21,24 +20,21 @@ const i18n = {
     btnManual: 'Manual Approve',
     btnAuto: 'Automatic Approve',
     modified: 'Last Modified',
-    approved: 'Approved',
-    rejected: 'Rejected',
-    modeManual: 'Manual',
-    modeContract: 'Smart Contract',
-    statusIlde: 'Created',
-    statusApproving: 'Approving',
-    statusComplete: 'Completed',
     title: 'Verification Requests',
     noRecord: 'No request availalble',
+    statusIdle: 'Idle',
+    statusManualApproving: 'Approving by {0}',
+    statusManualApproved: 'Approved by {0}',
+    statusManualRejected: 'Rejected by {0}',
+    statusAutoApproving: 'Automatic Approving',
+    statusAutoApproved: 'Automatic Approved',
+    statusAutoRejected: 'Automatic Rejected',
   },
   cn: {
     id: '单据号',
     customer: '客户标识',
-    bank: '审批银行',
     amount: '申请金额',
     asset: '资产要求',
-    mode: '验证模式',
-    result: '验证结果',
     status: '状态',
     operate: '操作',
     btnNew: '新建申请',
@@ -46,24 +42,16 @@ const i18n = {
     btnManual: '人工审批',
     btnAuto: '自动审批',
     modified: '最后更新',
-    approved: '通过',
-    rejected: '拒绝',
-    modeManual: '人工处理',
-    modeContract: '智能合约',
-    statusIlde: '新建',
-    statusApproving: '审批中',
-    statusComplete: '已完成',
     title: '校验申请',
     noRecord: '尚无申请',
+    statusIdle: '新建',
+    statusManualApproving: '{0}审批中',
+    statusManualApproved: '{0}已批准',
+    statusManualRejected: '{0}已否决',
+    statusAutoApproving: '自动审批中',
+    statusAutoApproved: '已自动批准',
+    statusAutoRejected: '已自动否决',
   }
-}
-
-export async function keepAlive() {
-  const url = '/api/alive/';
-  const options = {
-    method: 'PUT',
-  };
-  await fetch(url, options);
 }
 
 export default function Forms({ requests }: {
@@ -102,9 +90,10 @@ export default function Forms({ requests }: {
         icon: 'bi-search',
         label: texts.btnDetail,
       }];
-      let statusLabel: string, timeLabel: string, resultLabel: string, modeLabel: string;
+      let isManual = VerifyMode.Manual === verify_mode;
+      let statusLabel: string, timeLabel: string;
       if (RequestStatus.Idle === status) {
-        statusLabel = texts.statusIlde;
+        statusLabel = texts.statusIdle;
         timeLabel = new Date(create_time).toLocaleString();
         operates.push({
           href: '/forms/manual/' + id,
@@ -117,14 +106,27 @@ export default function Forms({ requests }: {
         }
         );
       } else if (RequestStatus.Approving === status) {
-        statusLabel = texts.statusApproving;
+        if (isManual){
+          statusLabel = strings(texts.statusManualApproving).replace('{0}', bank).get();
+        }else{
+          statusLabel = texts.statusAutoApproving;
+        }
         timeLabel = new Date(invoke_time).toLocaleString();
-        modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
       } else {
-        statusLabel = texts.statusComplete;
+        if (isManual){
+          if (result){
+            statusLabel = strings(texts.statusManualApproved).replace('{0}', bank).get();
+          }else{
+            statusLabel = strings(texts.statusManualRejected).replace('{0}', bank).get();
+          }          
+        }else{
+          if (result){
+            statusLabel = texts.statusAutoApproved;
+          }else{
+            statusLabel = texts.statusAutoReject;
+          }
+        }
         timeLabel = new Date(verify_time).toLocaleString();
-        resultLabel = result ? texts.approved : texts.rejected;
-        modeLabel = 'manual' === verify_mode ? texts.modeManual : texts.modeContract;
       }
       return (
         <tr key={id}>
@@ -132,11 +134,8 @@ export default function Forms({ requests }: {
           <td className='text-center'>{customer}</td>
           <td className='text-end'>{formatter.format(amount)}</td>
           <td className='text-end'>{formatter.format(minimum_asset)}</td>
-          <td>{bank}</td>
-          <td>{statusLabel}</td>
-          <td>{modeLabel}</td>
-          <td>{resultLabel}</td>
-          <td>{timeLabel}</td>
+          <td className='text-center'>{statusLabel}</td>
+          <td className='text-center'>{timeLabel}</td>
           <td>
             <div className='d-flex'>
               {
@@ -190,10 +189,7 @@ export default function Forms({ requests }: {
               <th>{texts.customer}</th>
               <th>{texts.amount}</th>
               <th>{texts.asset}</th>
-              <th>{texts.bank}</th>
               <th>{texts.status}</th>
-              <th>{texts.mode}</th>
-              <th>{texts.result}</th>
               <th>{texts.modified}</th>
               <th>{texts.operate}</th>
             </tr>

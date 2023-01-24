@@ -1,6 +1,6 @@
 'use client';
 import { getCurrentyFormatter, useAppContext } from '../../../../components/context';
-import { RequestRecord } from '../../../../components/verify_request';
+import { RequestRecord, VerifyMode } from '../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -24,6 +24,7 @@ const i18n = {
         completeTime: 'Complete Time',
         verifier: 'Verifier',
         invoker: 'Invoker',
+        comment: 'Comment',
         propertyName: 'Property',
         propertyValue: 'Value',
     },
@@ -48,6 +49,7 @@ const i18n = {
         completeTime: '完成时间',
         verifier: '审批者',
         invoker: '申请人',
+        comment: '答复',
         propertyName: '属性名',
         propertyValue: '属性值',
     }
@@ -64,7 +66,7 @@ export default function FormDetail({ record }: {
     const texts = i18n[lang];
     let formatter = getCurrentyFormatter();
     const { id, customer, amount, bank, verify_mode, result, invoker, verifier,
-        minimum_asset, status, create_time, invoke_time, verify_time } = record;
+        minimum_asset, status, create_time, invoke_time, verify_time, comment } = record;
     let statusLabel: string, resultLabel: string;
     if (enumIdle === status) {
         statusLabel = texts.statusIlde;
@@ -97,7 +99,7 @@ export default function FormDetail({ record }: {
         },
         {
             label: texts.mode,
-            value: 'manual' === verify_mode ? texts.modeManual : texts.modeContract,
+            value: VerifyMode.Manual === verify_mode ? texts.modeManual : texts.modeContract,
         },
         {
             label: texts.result,
@@ -122,6 +124,10 @@ export default function FormDetail({ record }: {
         {
             label: texts.verifier,
             value: verifier,
+        },
+        {
+            label: texts.comment,
+            value: comment,
         },
         {
             label: texts.completeTime,

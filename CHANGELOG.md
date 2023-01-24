@@ -1,5 +1,18 @@
 # Change Log for Demo A Client
 
+## [0.2.5] - 2023-01-24
+
+### Added
+
+- Debug option in package.json and chain SDK
+- Display comment in detail
+
+### Changed
+
+- Optimize API utils
+- Optimize status column of list
+- Query customers from chain
+
 ## [0.2.4] - 2023-01-20
 
 ### Changed
