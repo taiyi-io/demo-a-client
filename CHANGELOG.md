@@ -1,5 +1,11 @@
 # Change Log for Demo A Client
 
+## [0.2.6] - 2023-01-25
+
+### Added
+
+- History of record
+
 ## [0.2.5] - 2023-01-24
 
 ### Added

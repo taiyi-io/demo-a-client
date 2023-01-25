@@ -1,6 +1,6 @@
 'use client';
 import { getCurrentyFormatter, useAppContext } from '../../../../components/context';
-import { RequestRecord, VerifyMode } from '../../../../components/verify_request';
+import { RequestRecord, RequestStatus, VerifyMode } from '../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -55,10 +55,6 @@ const i18n = {
     }
 }
 
-
-const enumIdle = 0;
-const enumApproving = 1;
-
 export default function FormDetail({ record }: {
     record: RequestRecord,
 }) {
@@ -68,9 +64,9 @@ export default function FormDetail({ record }: {
     const { id, customer, amount, bank, verify_mode, result, invoker, verifier,
         minimum_asset, status, create_time, invoke_time, verify_time, comment } = record;
     let statusLabel: string, resultLabel: string;
-    if (enumIdle === status) {
+    if (RequestStatus.Idle === status) {
         statusLabel = texts.statusIlde;
-    } else if (enumApproving === status) {
+    } else if (RequestStatus.Approving === status) {
         statusLabel = texts.statusApproving;
     } else {
         statusLabel = texts.statusComplete;

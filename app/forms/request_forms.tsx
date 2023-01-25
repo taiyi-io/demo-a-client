@@ -19,6 +19,7 @@ const i18n = {
     btnDetail: 'Detail',
     btnManual: 'Manual Approve',
     btnAuto: 'Automatic Approve',
+    btnHistory: 'History',
     modified: 'Last Modified',
     title: 'Verification Requests',
     noRecord: 'No request availalble',
@@ -41,6 +42,7 @@ const i18n = {
     btnDetail: '详情',
     btnManual: '人工审批',
     btnAuto: '自动审批',
+    btnHistory: '变更历史',
     modified: '最后更新',
     title: '校验申请',
     noRecord: '尚无申请',
@@ -61,11 +63,11 @@ export default function Forms({ requests }: {
   const { lang } = useAppContext();
   const texts = i18n[lang];
   const aliveInterval = 1000 * 10;
-  React.useEffect(() =>{
+  React.useEffect(() => {
     let intervalID = setInterval(async () => {
       await keepAlive();
     }, aliveInterval);
-    return () =>{
+    return () => {
       clearInterval(intervalID);
     };
   }, []);
@@ -85,11 +87,13 @@ export default function Forms({ requests }: {
   if (records && 0 !== records.length) {
     content = records.map(({ id, customer, amount, bank, verify_mode, result,
       minimum_asset, status, create_time, invoke_time, verify_time }) => {
-      let operates = [{
-        href: '/forms/view/' + id,
-        icon: 'bi-search',
-        label: texts.btnDetail,
-      }];
+      let operates = [
+        {
+          href: '/forms/view/' + id,
+          icon: 'bi-search',
+          label: texts.btnDetail,
+        }];
+
       let isManual = VerifyMode.Manual === verify_mode;
       let statusLabel: string, timeLabel: string;
       if (RequestStatus.Idle === status) {
@@ -103,30 +107,36 @@ export default function Forms({ requests }: {
           href: '/forms/auto/' + id,
           icon: 'bi-robot',
           label: texts.btnAuto,
-        }
-        );
-      } else if (RequestStatus.Approving === status) {
-        if (isManual){
-          statusLabel = strings(texts.statusManualApproving).replace('{0}', bank).get();
-        }else{
-          statusLabel = texts.statusAutoApproving;
-        }
-        timeLabel = new Date(invoke_time).toLocaleString();
+        });
       } else {
-        if (isManual){
-          if (result){
-            statusLabel = strings(texts.statusManualApproved).replace('{0}', bank).get();
-          }else{
-            statusLabel = strings(texts.statusManualRejected).replace('{0}', bank).get();
-          }          
-        }else{
-          if (result){
-            statusLabel = texts.statusAutoApproved;
-          }else{
-            statusLabel = texts.statusAutoReject;
+        operates.push({
+          href: '/forms/history/' + id,
+          icon: 'bi-clock-history',
+          label: texts.btnHistory,
+        });
+        if (RequestStatus.Approving === status) {
+          if (isManual) {
+            statusLabel = strings(texts.statusManualApproving).replace('{0}', bank).get();
+          } else {
+            statusLabel = texts.statusAutoApproving;
           }
+          timeLabel = new Date(invoke_time).toLocaleString();
+        } else {
+          if (isManual) {
+            if (result) {
+              statusLabel = strings(texts.statusManualApproved).replace('{0}', bank).get();
+            } else {
+              statusLabel = strings(texts.statusManualRejected).replace('{0}', bank).get();
+            }
+          } else {
+            if (result) {
+              statusLabel = texts.statusAutoApproved;
+            } else {
+              statusLabel = texts.statusAutoReject;
+            }
+          }
+          timeLabel = new Date(verify_time).toLocaleString();
         }
-        timeLabel = new Date(verify_time).toLocaleString();
       }
       return (
         <tr key={id}>
