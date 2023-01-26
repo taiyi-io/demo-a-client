@@ -134,16 +134,16 @@ export default function FormDetail({ record }: {
         <table className="table table-hover table-striped">
             <thead>
                 <tr className='table-primary'>
-                    <td>{texts.propertyName}</td>
-                    <td>{texts.propertyValue}</td>
+                    <td className='text-center'>{texts.propertyName}</td>
+                    <td className='text-center'>{texts.propertyValue}</td>
                 </tr>
             </thead>
             <tbody>
                 {
                     parameters.map(({ label, value }, index) => (
                         <tr key={index}>
-                            <td>{label}</td>
-                            <td>{value}</td>
+                            <td className='text-center'>{label}</td>
+                            <td className='text-wrap text-truncate'>{value}</td>
                         </tr>
                     ))
                 }

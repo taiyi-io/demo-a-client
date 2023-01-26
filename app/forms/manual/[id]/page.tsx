@@ -1,12 +1,12 @@
 import { getRecord, loadAllRecords, queryBanks } from "../../../../components/chain_utils";
 import ManualPanel from "./panel";
 
-export async function generateStaticParams(){
-  const records = await loadAllRecords();
-  return records.map(record => ({
-    id: record.id,
-  }));
-}
+// export async function generateStaticParams(){
+//   const records = await loadAllRecords();
+//   return records.map(record => ({
+//     id: record.id,
+//   }));
+// }
 
 export default async function Page({
   params,

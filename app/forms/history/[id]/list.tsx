@@ -22,7 +22,7 @@ const i18n = {
         invoker: '触发者标识：',
         operate: '触发操作：',
         block: '所属区块：',
-        transaction: '所属交易：',
+        transaction: '交易ID：',
         status: '交易状态：',
         statusConfirmed: '已确认',
         statusNotConfirmed: '未确认',
@@ -37,7 +37,7 @@ export default function HistoryList({ history }: {
     const { latest_version, logs } = history;
     const length = logs.length;
     let cards: JSX.Element[] = [];
-    for (let offset = length - 1; offset >= 0; offset--){
+    for (let offset = length - 1; offset >= 0; offset--) {
         let log = logs[offset];
         const { version, timestamp, invoker, operate, block, transaction,
             confirmed } = log;
@@ -51,13 +51,23 @@ export default function HistoryList({ history }: {
                     <div className="card-text">
                         <div>{texts.invoker + invoker}</div>
                         <div>{texts.operate + operate}</div>
-                        <div className="text-success">{texts.status + (confirmed ? texts.statusConfirmed : texts.statusNotConfirmed)}</div>
-                        <div>{texts.transaction + transaction}</div>                                               
+                        <div>
+                            {texts.status}
+                            <span className={confirmed? "text-primary": "text-warning"}>
+                                {confirmed ? texts.statusConfirmed : texts.statusNotConfirmed}
+                            </span>
+                        </div>
+                        <div>{texts.transaction + transaction}</div>
                     </div>
                 </div>
-                <div className="card-footer text-muted">
-                    {texts.block + block}
-                </div>
+                {
+                    confirmed ? (
+                        <div className="card-footer text-muted">
+                            {texts.block + block}
+                        </div>
+                    ) : <div />
+                }
+
             </div>
         ))
     }

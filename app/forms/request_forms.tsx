@@ -132,7 +132,7 @@ export default function Forms({ requests }: {
             if (result) {
               statusLabel = texts.statusAutoApproved;
             } else {
-              statusLabel = texts.statusAutoReject;
+              statusLabel = texts.statusAutoRejected;
             }
           }
           timeLabel = new Date(verify_time).toLocaleString();

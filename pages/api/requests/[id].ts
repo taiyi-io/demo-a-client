@@ -37,8 +37,8 @@ async function handleSubmitRequest(req: NextApiRequest, res: NextApiResponse) {
         }
         await submitRequest(invoker, id as string, bank, mode);
     } catch (error) {
-        result.error_code = 500,
-            result.message = error.message;
+        result.error_code = 500;
+        result.message = error.message;
     } finally {
         res.status(200).json(result);
     }
@@ -61,7 +61,19 @@ async function submitRequest(invoker: string, recordID: string, bank: string, mo
     console.log(`<API> request '${recordID}' invoked`);
     if (VerifyMode.Contract === mode) {
         const contractName = VERIFY_CONTRACT_NAME;
-        await conn.callContract(contractName, [recordID]);
-        console.log(`<API> contract ${contractName} automated executed`);
+        try{
+            await conn.callContract(contractName, [recordID]);
+            console.log(`<API> contract ${contractName} automated executed`);
+        }catch(e){
+            console.log(`<API> contract ${contractName} execute failed: ${e.message}`);
+            //update fail result
+            currentRecord.verifier = contractName;
+            currentRecord.verify_time = new Date().toISOString();
+            currentRecord.status = RequestStatus.Complete;
+            currentRecord.result = false;
+            currentRecord.comment = e.message;
+            await conn.updateDocument(REQUEST_SCHEMA_NAME, recordID, JSON.stringify(currentRecord));
+        }
+        
     }
 }

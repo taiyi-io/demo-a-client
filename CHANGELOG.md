@@ -1,5 +1,16 @@
 # Change Log for Demo A Client
 
+## [0.2.7] - 2023-01-26
+
+### Added
+
+- Automatic Approving
+
+### Changed
+
+- Optimize list and detail
+- Enable dynamic render
+
 ## [0.2.6] - 2023-01-25
 
 ### Added
