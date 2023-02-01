@@ -15,11 +15,16 @@ async function initialChainEnvironment(conn: ChainConnector) {
     await conn.createSchema(REQUEST_SCHEMA_NAME, defines);
     console.log('schema %s initialized', REQUEST_SCHEMA_NAME);
   }
-  await conn.deployContract(VERIFY_CONTRACT_NAME, CONTRACT_DEFINE);
-  console.log('contract %s deployed', VERIFY_CONTRACT_NAME);
+  if (!await conn.hasContract(VERIFY_CONTRACT_NAME)){
+    await conn.deployContract(VERIFY_CONTRACT_NAME, CONTRACT_DEFINE);
+    console.log('contract %s deployed', VERIFY_CONTRACT_NAME);      
+  }
   if (npmPackage.chain.debug){
-    await conn.enableContractTrace(VERIFY_CONTRACT_NAME);
-    console.log('trace flag of contract %s enabled', VERIFY_CONTRACT_NAME);
+    let info = await conn.getContractInfo(VERIFY_CONTRACT_NAME);
+    if (!info.trace){
+      await conn.enableContractTrace(VERIFY_CONTRACT_NAME);
+      console.log('trace flag of contract %s enabled', VERIFY_CONTRACT_NAME);  
+    }
   }
 }
 
