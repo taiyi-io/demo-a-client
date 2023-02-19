@@ -3,7 +3,7 @@
   "description": "A Demo for the application system of corporation A",
   "version": "0.3.0",
   "chain": {
-    "host": "",
+    "host": "192.168.3.47",
     "port": 9100,
     "debug": false
   },

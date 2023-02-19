@@ -2,7 +2,11 @@
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-function HomePage({searchParams}) {
+function HomePage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const router = useRouter();
   React.useEffect(() =>{
     let language = searchParams.lang;
