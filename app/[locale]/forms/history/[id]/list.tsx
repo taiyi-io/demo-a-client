@@ -1,6 +1,6 @@
 'use client';
-import { LogRecords } from "../../../../components/chain_sdk";
-import { useAppContext } from "../../../../components/context";
+import { LogRecords } from "../../../../../components/chain_sdk";
+import { useAppContext } from "../../../../../components/context";
 
 const i18n = {
     en: {

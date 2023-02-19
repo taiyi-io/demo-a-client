@@ -1,5 +1,5 @@
 
-import { queryCustomers } from "../../../components/chain_utils";
+import { queryCustomers } from "../../../../components/chain_utils";
 import NewPanel from "./panel";
 
 export default async function Page() {

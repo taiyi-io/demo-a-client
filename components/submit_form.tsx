@@ -4,8 +4,8 @@ import BackButton from './back_button';
 import { RequestRecord, VerifyMode } from './verify_request';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import { ResponsePayload } from '../pages/api/response';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import strings from '@supercharge/strings/dist';
 import { submitRequest } from './api_utils';
 
@@ -81,11 +81,12 @@ export default function SubmitForm({ record, bankList, mode }: {
     } else {
         initialData.mode = VerifyMode.Manual;
     }
+    const currentPath = usePathname();
     const { lang, user } = useAppContext();
     const texts = i18n[lang];
     const { id, customer, amount, minimum_asset, create_time } = record;
 
-    const listURL = '/forms';
+    const listURL = currentPath + '/../..';
     const DEFAULT_COUNT_DOWN = 5;
     const router = useRouter();
     const [status, setStatus] = React.useState(formStatus.idle);
@@ -286,7 +287,7 @@ export default function SubmitForm({ record, bankList, mode }: {
                     <div className='col-6'>
                         <div className='d-flex'>
                             <div className='m-1'>
-                                <BackButton href='/forms' disabled={isCommiting} />
+                                <BackButton href={currentPath + '/../..'} disabled={isCommiting} />
                             </div>
                             <div className='m-1'>
                                 <button type="button" className="btn btn-primary btn-sm" onClick={handleSumit} disabled={isCommiting}>

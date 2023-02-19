@@ -1,9 +1,9 @@
 'use client';
-import { useAppContext } from '../../../../components/context';
-import BackButton from '../../../../components/back_button';
+import { useAppContext } from '../../../../../components/context';
+import BackButton from '../../../../../components/back_button';
 import FormDetail from './form';
 import Link from 'next/link';
-import { RequestRecord } from '../../../../components/verify_request';
+import { RequestRecord } from '../../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -26,7 +26,7 @@ export default function DetailPanel({record}:{
             <div className='row mx-1'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link href='/forms'>{texts.forms}</Link></li>
+                        <li className="breadcrumb-item"><a href='../../forms/'>{texts.forms}</a></li>
                         <li className="breadcrumb-item active">{texts.detail}</li>
                     </ol>
                 </nav>
@@ -40,7 +40,7 @@ export default function DetailPanel({record}:{
             </div>
             <div className='row pb-3 justify-content-center'>
                 <div className='col-2'>
-                    <BackButton href='/forms' />
+                    <BackButton href='../../forms/' />
                 </div>
             </div>
         </div>

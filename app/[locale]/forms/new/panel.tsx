@@ -1,7 +1,7 @@
 'use client';
-import { useAppContext } from '../../../components/context';
-import Link from 'next/link';
+import { useAppContext } from '../../../../components/context';
 import CreateForm from './form';
+import { usePathname } from 'next/navigation';
 
 const i18n = {
     en: {
@@ -17,6 +17,7 @@ const i18n = {
 export default function NewPanel({ users }: {
     users: string[],
 }) {
+    const currentPath = usePathname();
     const { lang } = useAppContext();
     const texts = i18n[lang];
     return (
@@ -24,7 +25,7 @@ export default function NewPanel({ users }: {
             <div className='row mx-1'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link href='/forms'>{texts.forms}</Link></li>
+                        <li className="breadcrumb-item"><a href={currentPath + '/..'}>{texts.forms}</a></li>
                         <li className="breadcrumb-item active">{texts.new}</li>
                     </ol>
                 </nav>

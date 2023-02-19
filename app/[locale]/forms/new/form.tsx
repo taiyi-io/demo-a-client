@@ -1,12 +1,12 @@
 'use client';
-import { useAppContext } from '../../../components/context';
-import BackButton from '../../../components/back_button';
-import React, { useEffect } from 'react';
+import { useAppContext } from '../../../../components/context';
+import BackButton from '../../../../components/back_button';
+import React from 'react';
 import Link from 'next/link';
 import strings from '@supercharge/strings/dist';
 import { useRouter } from 'next/navigation';
-import { ResponsePayload } from '../../../pages/api/response';
-import { createRequest } from '../../../components/api_utils';
+import { usePathname } from 'next/navigation';
+import { createRequest } from '../../../../components/api_utils';
 
 const i18n = {
     en: {
@@ -62,9 +62,10 @@ export default function CreateForm({ users }: {
         amount: 0,
         asset: 0
     };
+    const currentPath = usePathname();
     const { lang, user } = useAppContext();
     const texts = i18n[lang];
-    const listURL = '/forms';
+    const listURL = currentPath + '/..';
     const DEFAULT_COUNT_DOWN = 5;
     const router = useRouter();
     const [status, setStatus] = React.useState(formStatus.idle);
@@ -248,7 +249,7 @@ export default function CreateForm({ users }: {
                 </div>
                 <div className='d-flex'>
                     <div className='m-1'>
-                        <BackButton href='/forms/' disabled={isCommiting} />
+                        <BackButton href={currentPath + "/.."} disabled={isCommiting} />
                     </div>
                     <div className='m-1'>
                         <button type="button" className="btn btn-primary btn-sm" onClick={handleSumit} disabled={isCommiting}>

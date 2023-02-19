@@ -1,8 +1,9 @@
 'use client';
-import { useAppContext } from '../../../../components/context';
+import { useAppContext } from '../../../../../components/context';
 import Link from 'next/link';
-import SubmitForm, { formMode } from '../../../../components/submit_form';
-import { RequestRecord } from '../../../../components/verify_request';
+import { usePathname } from 'next/navigation';
+import SubmitForm, { formMode } from '../../../../../components/submit_form';
+import { RequestRecord } from '../../../../../components/verify_request';
 
 const i18n = {
     en: {
@@ -19,6 +20,7 @@ export default function ManualPanel({ record, bankList }: {
     record: RequestRecord,
     bankList: string[],
 }) {
+    const currentPath = usePathname();
     const { lang } = useAppContext();
     const texts = i18n[lang];
     return (
@@ -26,7 +28,7 @@ export default function ManualPanel({ record, bankList }: {
             <div className='row mx-1'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link href='/forms'>{texts.forms}</Link></li>
+                        <li className="breadcrumb-item"><Link href={currentPath + '/../..'}>{texts.forms}</Link></li>
                         <li className="breadcrumb-item active">{texts.manual}</li>
                     </ol>
                 </nav>

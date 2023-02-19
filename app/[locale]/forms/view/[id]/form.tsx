@@ -1,6 +1,6 @@
 'use client';
-import { getCurrentyFormatter, useAppContext } from '../../../../components/context';
-import { RequestRecord, RequestStatus, VerifyMode } from '../../../../components/verify_request';
+import { getCurrentyFormatter, useAppContext } from '../../../../../components/context';
+import { RequestRecord, RequestStatus, VerifyMode } from '../../../../../components/verify_request';
 
 const i18n = {
     en: {

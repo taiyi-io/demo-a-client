@@ -1,9 +1,8 @@
 'use client';
-import { useAppContext } from '../../../../components/context';
-import BackButton from '../../../../components/back_button';
-import Link from 'next/link';
+import { useAppContext } from '../../../../../components/context';
+import BackButton from '../../../../../components/back_button';
 import HistoryList from './list';
-import { LogRecords } from '../../../../components/chain_sdk';
+import { LogRecords } from '../../../../../components/chain_sdk';
 
 const i18n = {
     en: {
@@ -26,7 +25,7 @@ export default function HistoryPanel({history}:{
             <div className='row mx-1'>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link href='/forms'>{texts.forms}</Link></li>
+                        <li className="breadcrumb-item"><a href='../../forms'>{texts.forms}</a></li>
                         <li className="breadcrumb-item active">{texts.history}</li>
                     </ol>
                 </nav>
@@ -40,7 +39,7 @@ export default function HistoryPanel({history}:{
             </div>
             <div className='row pb-3 justify-content-center'>
                 <div className='col-2'>
-                    <BackButton href='/forms' />
+                    <BackButton href='../../forms' />
                 </div>
             </div>
         </div>

@@ -1,4 +1,14 @@
-# Change Log for Demo A Client
+# Change Log for Corporation A demo
+
+## [0.3.0] - 2023-02-19
+
+### Added
+
+- Allow specifying language directly on the landing page using '/?lang=en'
+
+### Changed
+
+- Generate pages of different locales on different paths
 
 ## [0.2.7] - 2023-01-26
 

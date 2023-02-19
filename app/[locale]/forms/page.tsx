@@ -1,8 +1,8 @@
 import Forms from './request_forms';
-import ChainProvider from '../../components/chain_provider';
-import { QueryBuilder, ChainConnector } from '../../components/chain_sdk';
-import { REQUEST_SCHEMA_NAME, SchemaProperties, RequestRecord } from '../../components/verify_request';
-import { RecordList } from '../../components/verify_request';
+import ChainProvider from '../../../components/chain_provider';
+import { QueryBuilder } from '../../../components/chain_sdk';
+import { REQUEST_SCHEMA_NAME, RequestRecord } from '../../../components/verify_request';
+import { RecordList } from '../../../components/verify_request';
 
 async function queryRecords(pageOffset: number, pageSize: number): Promise<RecordList> {
   let conn = await ChainProvider.connect();

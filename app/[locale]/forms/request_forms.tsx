@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
-import Pagenation from '../../components/pagination';
-import { useAppContext, getCurrentyFormatter } from '../../components/context';
-import { RecordList, RequestStatus, VerifyMode } from '../../components/verify_request';
+import { usePathname } from 'next/navigation';
+import Pagenation from '../../../components/pagination';
+import { useAppContext, getCurrentyFormatter } from '../../../components/context';
+import { RecordList, RequestStatus, VerifyMode } from '../../../components/verify_request';
 import React from 'react';
-import { keepAlive } from '../../components/api_utils';
+import { keepAlive } from '../../../components/api_utils';
 import strings from '@supercharge/strings/dist';
 
 const i18n = {
@@ -61,6 +62,7 @@ export default function Forms({ requests }: {
 }) {
   const { offset, size, total, records } = requests;
   const { lang } = useAppContext();
+  const currentPath = usePathname();
   const texts = i18n[lang];
   const aliveInterval = 1000 * 10;
   React.useEffect(() => {
@@ -89,7 +91,7 @@ export default function Forms({ requests }: {
       minimum_asset, status, create_time, invoke_time, verify_time }) => {
       let operates = [
         {
-          href: '/forms/view/' + id,
+          href: '/view/' + id,
           icon: 'bi-search',
           label: texts.btnDetail,
         }];
@@ -100,17 +102,17 @@ export default function Forms({ requests }: {
         statusLabel = texts.statusIdle;
         timeLabel = new Date(create_time).toLocaleString();
         operates.push({
-          href: '/forms/manual/' + id,
+          href: '/manual/' + id,
           icon: 'bi-person-fill',
           label: texts.btnManual,
         }, {
-          href: '/forms/auto/' + id,
+          href: '/auto/' + id,
           icon: 'bi-robot',
           label: texts.btnAuto,
         });
       } else {
         operates.push({
-          href: '/forms/history/' + id,
+          href: '/history/' + id,
           icon: 'bi-clock-history',
           label: texts.btnHistory,
         });
@@ -150,12 +152,12 @@ export default function Forms({ requests }: {
             <div className='d-flex'>
               {
                 operates.map(({ href, icon, label }, index) => (
-                  <Link href={href} key={index}>
+                  <a href={currentPath + href} key={index}>
                     <button type="button" className="btn btn-outline-primary btn-sm m-1">
                       <i className={'bi ' + icon}></i>
                       {label}
                     </button>
-                  </Link>
+                  </a>
                 ))
               }
             </div>
@@ -182,11 +184,11 @@ export default function Forms({ requests }: {
           </ol>
         </nav>
         <div className='col col-lg-2 px-3'>
-          <Link href='/forms/new/'>
+          <a href={currentPath + '/new/'}>
             <button type="button" className="btn btn-primary btn-sm m-1">
               <i className="bi bi-plus"></i>{texts.btnNew}
             </button>
-          </Link>
+          </a>
         </div>
         <div className="col-auto">
         </div>
@@ -208,7 +210,7 @@ export default function Forms({ requests }: {
             {content}
           </tbody>
         </table>
-        <Pagenation baseURL='/forms/' current={currentPage} total={totalPages} />
+        <Pagenation baseURL={currentPath} current={currentPage} total={totalPages} />
       </div>
     </div>
   )
