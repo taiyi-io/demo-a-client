@@ -1,5 +1,5 @@
 import ChainProvider from "./chain_provider";
-import { LogRecords, QueryBuilder } from "./chain_sdk";
+import { LogRecords, QueryBuilder } from "@taiyi-io/chain-connector";
 import { ASSET_SCHEMA_NAME } from "./verify_asset";
 import { RequestRecord, REQUEST_SCHEMA_NAME } from "./verify_request";
 

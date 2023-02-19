@@ -1,4 +1,4 @@
-import { DocumentProperty, PropertyType } from "./chain_sdk";
+import { DocumentProperty, PropertyType } from "@taiyi-io/chain-connector";
 
 enum RequestParameter {
     Customer = 'customer',

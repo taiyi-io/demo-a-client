@@ -1,5 +1,5 @@
 'use client';
-import { LogRecords } from "../../../../../components/chain_sdk";
+import { LogRecords } from "@taiyi-io/chain-connector";
 import { useAppContext } from "../../../../../components/context";
 
 const i18n = {

@@ -1,5 +1,5 @@
 import ChainProvider from '../components/chain_provider';
-import { ChainConnector } from '../components/chain_sdk';
+import { ChainConnector } from "@taiyi-io/chain-connector";
 import { CONTRACT_DEFINE, VERIFY_CONTRACT_NAME } from '../components/verify_asset';
 import { REQUEST_SCHEMA_NAME, SchemaProperties } from '../components/verify_request';
 import Boot from './bootstrap';

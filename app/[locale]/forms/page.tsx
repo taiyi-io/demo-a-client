@@ -1,6 +1,6 @@
 import Forms from './request_forms';
 import ChainProvider from '../../../components/chain_provider';
-import { QueryBuilder } from '../../../components/chain_sdk';
+import { QueryBuilder } from "@taiyi-io/chain-connector";
 import { REQUEST_SCHEMA_NAME, RequestRecord } from '../../../components/verify_request';
 import { RecordList } from '../../../components/verify_request';
 

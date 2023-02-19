@@ -2,7 +2,7 @@
 import { useAppContext } from '../../../../../components/context';
 import BackButton from '../../../../../components/back_button';
 import HistoryList from './list';
-import { LogRecords } from '../../../../../components/chain_sdk';
+import { LogRecords } from "@taiyi-io/chain-connector";
 
 const i18n = {
     en: {

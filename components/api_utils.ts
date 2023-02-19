@@ -1,5 +1,4 @@
 import { ResponsePayload } from "../pages/api/response";
-import { TraceLog } from "./chain_sdk";
 
 export async function keepAlive() {
   const url = '/api/alive/';
