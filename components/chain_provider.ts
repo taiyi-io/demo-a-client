@@ -1,4 +1,4 @@
-import { NewConnectorFromAccess, ChainConnector } from "./chain_sdk";
+import { NewConnectorFromAccess, ChainConnector } from "@taiyi-io/chain-connector";
 import path from 'path';
 import { promises as fs } from 'fs';
 
@@ -11,9 +11,11 @@ export default class ChainProvider{
         if (null !== this.conn){
             return this.conn;
         }
+        
         const filePath = path.join(process.cwd(), 'access_key.json');
         const content = await fs.readFile(filePath, 'utf8');
         let conn = NewConnectorFromAccess(JSON.parse(content));
+        conn.setProjectName("Taiyi");
         if (debug){
             conn.Trace = true;
         }

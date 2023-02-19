@@ -3,7 +3,7 @@
   "description": "A Demo for the application system of corporation A",
   "version": "0.3.0",
   "chain": {
-    "host": "192.168.3.47",
+    "host": "localhost",
     "port": 9100,
     "debug": false
   },
@@ -12,6 +12,7 @@
     "@bitauth/libauth": "^1.19.1",
     "@noble/ed25519": "^1.7.1",
     "@supercharge/strings": "^2.0.0",
+    "@taiyi-io/chain-connector": "^0.5.0",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
     "crypto-js": "^4.1.1",

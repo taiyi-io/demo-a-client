@@ -9,6 +9,7 @@
 ### Changed
 
 - Generate pages of different locales on different paths
+- Import @taiyi-io/chain-connector
 
 ## [0.2.7] - 2023-01-26
 
