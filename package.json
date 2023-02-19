@@ -3,6 +3,7 @@
   "description": "A Demo for the application system of corporation A",
   "version": "0.3.0",
   "chain": {
+    "project": "",
     "host": "localhost",
     "port": 9100,
     "debug": false
