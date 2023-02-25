@@ -118,17 +118,17 @@ export default function Forms({ requests }: {
         });
         if (RequestStatus.Approving === status) {
           if (isManual) {
-            statusLabel = strings(texts.statusManualApproving).replace('{0}', bank).get();
+            statusLabel = strings(texts.statusManualApproving).replace('{0}', bank as string).get();
           } else {
             statusLabel = texts.statusAutoApproving;
           }
-          timeLabel = new Date(invoke_time).toLocaleString();
+          timeLabel = new Date(invoke_time as string).toLocaleString();
         } else {
           if (isManual) {
             if (result) {
-              statusLabel = strings(texts.statusManualApproved).replace('{0}', bank).get();
+              statusLabel = strings(texts.statusManualApproved).replace('{0}', bank as string).get();
             } else {
-              statusLabel = strings(texts.statusManualRejected).replace('{0}', bank).get();
+              statusLabel = strings(texts.statusManualRejected).replace('{0}', bank as string).get();
             }
           } else {
             if (result) {
@@ -137,7 +137,7 @@ export default function Forms({ requests }: {
               statusLabel = texts.statusAutoRejected;
             }
           }
-          timeLabel = new Date(verify_time).toLocaleString();
+          timeLabel = new Date(verify_time as string).toLocaleString();
         }
       }
       return (
@@ -210,7 +210,7 @@ export default function Forms({ requests }: {
             {content}
           </tbody>
         </table>
-        <Pagenation baseURL={currentPath} current={currentPage} total={totalPages} />
+        <Pagenation baseURL={currentPath as string} current={currentPage} total={totalPages} />
       </div>
     </div>
   )

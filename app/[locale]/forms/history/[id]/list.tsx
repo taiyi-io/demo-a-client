@@ -14,6 +14,7 @@ const i18n = {
         status: 'Status: ',
         statusConfirmed: 'Confirmed',
         statusNotConfirmed: 'Not Confirmed',
+        noRecord: 'No log available',
     },
     cn: {
         latest: '最新版本: ',
@@ -26,6 +27,7 @@ const i18n = {
         status: '交易状态：',
         statusConfirmed: '已确认',
         statusNotConfirmed: '未确认',
+        noRecord: '尚无可用日志',
     }
 };
 
@@ -35,6 +37,13 @@ export default function HistoryList({ history }: {
     const { lang } = useAppContext();
     const texts = i18n[lang];
     const { latest_version, logs } = history;
+    if (!logs){
+        return (
+            <div>
+                {texts.noRecord}
+            </div>
+        )
+    }
     const length = logs.length;
     let cards: JSX.Element[] = [];
     for (let offset = length - 1; offset >= 0; offset--) {

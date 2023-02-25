@@ -63,7 +63,7 @@ export default function FormDetail({ record }: {
     let formatter = getCurrentyFormatter();
     const { id, customer, amount, bank, verify_mode, result, invoker, verifier,
         minimum_asset, status, create_time, invoke_time, verify_time, comment } = record;
-    let statusLabel: string, resultLabel: string;
+    let statusLabel: string, resultLabel: string = '';
     if (RequestStatus.Idle === status) {
         statusLabel = texts.statusIlde;
     } else if (RequestStatus.Approving === status) {

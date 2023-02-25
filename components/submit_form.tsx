@@ -126,7 +126,7 @@ export default function SubmitForm({ record, bankList, mode }: {
         }
         setStatus(formStatus.committing);
         try {
-            await submitRequest(id, user, data.bank, data.mode);
+            await submitRequest(id as string, user, data.bank, data.mode);
             setCountDown(DEFAULT_COUNT_DOWN);
             setStatus(formStatus.success);
         } catch (e) {
@@ -152,7 +152,7 @@ export default function SubmitForm({ record, bankList, mode }: {
         }
     }, [status, countDown]);
     if (formStatus.success === status) {
-        let title: string = strings(texts.formatSuccess).replace('{0}', id).get();
+        let title: string = strings(texts.formatSuccess).replace('{0}', id as string).get();
         let countDownLabel = strings(texts.countDown).replace('{0}', countDown.toString()).get();
         return (
             <div className='text-center p-3 m-5'>
