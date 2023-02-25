@@ -1,7 +1,7 @@
 {
   "name": "demo-corp-a",
   "description": "A Demo for the application system of corporation A",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "chain": {
     "project": "",
     "host": "localhost",

@@ -1,5 +1,11 @@
 # Change Log for Corporation A demo
 
+## [0.3.1] - 2023-02-25
+
+### Changed
+
+- Allocate a new connector for each connection request
+
 ## [0.3.0] - 2023-02-19
 
 ### Added
