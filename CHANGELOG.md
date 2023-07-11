@@ -1,5 +1,11 @@
 # Change Log for Corporation A demo
 
+## [0.3.2] - 2023-03-10
+
+### Changed
+
+- Change output dir of building to 'build' for deploying
+
 ## [0.3.1] - 2023-02-25
 
 ### Changed
